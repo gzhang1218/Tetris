@@ -9,49 +9,149 @@ import java.awt.*;
  */
 public final class TetrisBoard implements Board {
 
+    /**
+     *
+     * @param width
+     * @param height
+     */
     // JTetris will use this constructor
-    public TetrisBoard(int width, int height) {}
+    public TetrisBoard(int width, int height) {
 
-    @Override
-    public Result move(Action act) { return Result.NO_PIECE; }
+    }
 
+    /**
+     *
+     * @param act
+     * @return
+     */
     @Override
-    public Board testMove(Action act) { return null; }
+    public Result move(Action act) {
+        return Result.NO_PIECE;
+    }
 
+    /**
+     *
+     * @param act
+     * @return
+     */
     @Override
-    public void nextPiece(Piece p) {}
+    public Board testMove(Action act) {
+        return null;
+    }
 
+    /**
+     *
+     * @param p
+     */
     @Override
-    public boolean equals(Object other) { return false; }
+    public void nextPiece(Piece p) {
 
-    @Override
-    public Result getLastResult() { return Result.NO_PIECE; }
+    }
 
+    /**
+     *
+     * @param other
+     * @return
+     */
     @Override
-    public Action getLastAction() { return Action.NOTHING; }
+    public boolean equals(Object other) {
+        return false;
+    }
 
+    /**
+     *
+     * @return
+     */
     @Override
-    public int getRowsCleared() { return -1; }
+    public Result getLastResult() {
+        return Result.NO_PIECE;
+    }
 
+    /**
+     *
+     * @return
+     */
     @Override
-    public int getWidth() { return -1; }
+    public Action getLastAction() {
+        return Action.NOTHING;
+    }
 
+    /**
+     *
+     * @return
+     */
     @Override
-    public int getHeight() { return -1; }
+    public int getRowsCleared() {
+        return -1;
+    }
 
+    /**
+     *
+     * @return
+     */
     @Override
-    public int getMaxHeight() { return -1; }
+    public int getWidth() {
+        return -1;
+    }
 
+    /**
+     *
+     * @return
+     */
     @Override
-    public int dropHeight(Piece piece, int x) { return -1; }
+    public int getHeight() {
+        return -1;
+    }
 
+    /**
+     *
+     * @return
+     */
     @Override
-    public int getColumnHeight(int x) { return -1; }
+    public int getMaxHeight() {
+        return -1;
+    }
 
+    /**
+     *
+     * @param piece
+     * @param x
+     * @return
+     */
     @Override
-    public int getRowWidth(int y) { return -1; }
+    public int dropHeight(Piece piece, int x) {
+        return -1;
+    }
 
+    /**
+     *
+     * @param x
+     * @return
+     */
     @Override
-    public boolean getGrid(int x, int y) { return false; }
+    public int getColumnHeight(int x) {
+        return -1;
+    }
+
+    /**
+     *
+     * @param y
+     * @return
+     */
+    @Override
+    public int getRowWidth(int y) {
+        return -1;
+    }
+
+    /**
+     *
+     * @param x
+     * @param y
+     * @return
+     */
+    @Override
+    public boolean getGrid(int x, int y) {
+        return false;
+    }
 
 }
