@@ -9,17 +9,23 @@ import java.awt.*;
  */
 public final class TetrisBoard implements Board {
 
-    /**
-     *
-     * @param width
-     * @param height
-     */
+
+    // (0, 0) is the bottom left corner
+    private boolean[][] board;
+
+    private Piece piece;
+    private Action lastAction;
+    private Result lastResult;
+    private int rowsCleared; // initialized at 0
+
     // JTetris will use this constructor
     public TetrisBoard(int width, int height) {
-
+        board = new boolean[height][width];
     }
 
     /**
+     * This method needs to update the lastAction,
+     * lastResult, rowsCleared
      *
      * @param act
      * @return
@@ -39,16 +45,13 @@ public final class TetrisBoard implements Board {
         return null;
     }
 
-    /**
-     *
-     * @param p
-     */
     @Override
     public void nextPiece(Piece p) {
-
+        this.piece = p;
     }
 
     /**
+     * Need to compare 2-d arrays,
      *
      * @param other
      * @return
@@ -58,88 +61,52 @@ public final class TetrisBoard implements Board {
         return false;
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public Result getLastResult() {
-        return Result.NO_PIECE;
+        return lastResult;
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public Action getLastAction() {
-        return Action.NOTHING;
+        return lastAction;
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public int getRowsCleared() {
-        return -1;
+        return rowsCleared;
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public int getWidth() {
-        return -1;
+        return board[0].length;
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public int getHeight() {
-        return -1;
+        return board.length;
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public int getMaxHeight() {
+        //TODO
         return -1;
     }
 
-    /**
-     *
-     * @param piece
-     * @param x
-     * @return
-     */
     @Override
     public int dropHeight(Piece piece, int x) {
+        //TODO
         return -1;
     }
 
-    /**
-     *
-     * @param x
-     * @return
-     */
     @Override
     public int getColumnHeight(int x) {
+        // TODO (does only count "settled" blocks?)
         return -1;
     }
 
-    /**
-     *
-     * @param y
-     * @return
-     */
     @Override
     public int getRowWidth(int y) {
+        //TODO
         return -1;
     }
 
@@ -151,7 +118,7 @@ public final class TetrisBoard implements Board {
      */
     @Override
     public boolean getGrid(int x, int y) {
-        return false;
+        return board[y][x];
     }
 
 }
