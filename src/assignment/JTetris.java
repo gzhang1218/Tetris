@@ -264,11 +264,9 @@ public class JTetris extends JComponent {
           case OUT_BOUNDS:
             // The board is responsible for staying in a good state
             break;
-          case PLACE:
-              for (int x = 0; x < WIDTH; x++) {
-                  if (board.getMaxHeight() > HEIGHT) {
-                      stopGame();
-                  }
+            case PLACE:
+              if (board.getMaxHeight() > HEIGHT) {
+                  stopGame();
               }
           case NO_PIECE:
               if (gameOn) {
