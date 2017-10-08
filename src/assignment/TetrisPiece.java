@@ -13,7 +13,7 @@ public final class TetrisPiece extends Piece {
     private int x, y; // coordinate of bottom left
     private int height, width;
     private Point[] body;
-    private int[] skirt;
+    private int[] skirt, lSkirt, rSkirt;
 
     /**
      * Parse a "piece string" of the form "x1 y1 x2 y2 ..." into a TetrisPiece
@@ -27,6 +27,7 @@ public final class TetrisPiece extends Piece {
 
         // TODO : handle rotations, maybe process the pieces differently?
 
+        // place the piece at the top in the middle
         piece.setX(JTetris.WIDTH / 2);
         piece.setY(JTetris.HEIGHT);
 
@@ -46,9 +47,32 @@ public final class TetrisPiece extends Piece {
 
         // getting skirt
         int[] temp = new int[piece.getWidth()];
-        for (Point point : piece.getBody()) {
-            // TODO
-        }
+        for (int i = 0 ; i < temp.length ; i++) temp[i] = 10;
+        for (Point point : piece.getBody())
+            if (point.getY() < temp[(int)point.getX()])
+                temp[(int)point.getX()] = (int)point.getY();
+
+        piece.setSkirt(temp);
+
+        // getting left skirt
+        temp = new int[piece.getHeight()];
+        for (int i = 0 ; i < temp.length ; i++) temp[i] = 10;
+        for (Point point : piece.getBody())
+            if (point.getX() < temp[(int)point.getY()])
+                temp[(int)point.getY()] = (int)point.getX();
+
+        piece.setLSkirt(temp);
+
+        // getting right skirt - *trickier*
+        temp = new int[piece.getHeight()];
+        for (int i = 0 ; i < temp.length ; i++) temp[i] = -1;
+        for (Point point : piece.getBody())
+            if (point.getX() > temp[(int)point.getY()])
+                temp[(int)point.getY()] = (int)point.getX();
+        for (int i = 0 ; i < temp.length; i++)
+            temp[i] = piece.getWidth() - 1 - temp[i];
+
+        piece.setRSkirt(temp);
 
         return piece;
     }
@@ -100,14 +124,14 @@ public final class TetrisPiece extends Piece {
         return this.body;
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public int[] getSkirt() {
         return skirt;
     }
+
+    public int[] getLSkirt() { return lSkirt; }
+
+    public int[] getRSkirt() { return rSkirt; }
 
     /**
      * Compares the Point[] bodies
@@ -149,4 +173,11 @@ public final class TetrisPiece extends Piece {
     public void setBody(Point[] body) {
         this.body = body;
     }
+
+    public void setSkirt(int[] skirt) { this.skirt = skirt; }
+
+    public void setLSkirt(int[] lSkirt) { this.lSkirt = lSkirt; }
+
+    public void setRSkirt(int[] rSkirt) { this.rSkirt = rSkirt; }
+
 }
