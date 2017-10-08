@@ -13,25 +13,136 @@ public final class TetrisPiece extends Piece {
     private int x, y; // coordinate of bottom left
     private int height, width;
     private Point[] body;
+    private Point anchor;
     private int[] skirt, lSkirt, rSkirt;
+    private char rotationState;
+
+    static final String I = "0 0  1 0  2 0  3 0";
+    static final String J = "0 1  1 1  2 1  2 0";
+    static final String L = "0 0  0 1  1 1  2 1";
+    static final String RD = "0 0  1 0  1 1  2 1";
+    static final String LD = "0 1  1 1  1 0  2 0";
+    static final String S = "0 0  0 1  1 0  1 1";
+    static final String T = "0 1  1 0  1 1  2 1";
 
     /**
      * Parse a "piece string" of the form "x1 y1 x2 y2 ..." into a TetrisPiece
      * where the corresponding (x1, y1), (x2, y2) positions have been filled in.
      *
-     * Calculate height, width, store body, calculate skirt
-     * Generate the rotations as well and link them
+     * ***IMPORTANT ASSUMPTION***
+     * In order to choose an "anchor point" about which to rotate
+     * we assumed that only the 7 pieceStrings specified in JTetris.java
+     * would be passed in.
+     *
+     * Generate the rotations and link them
      */
     public static Piece getPiece(String pieceString) {
-        TetrisPiece piece = new TetrisPiece();
-
-        // TODO : handle rotations, maybe process the pieces differently?
-
-        // place the piece at the top in the middle
+        // generate the given piece
+        TetrisPiece piece = generatePiece(parsePoints(pieceString));
         piece.setX(JTetris.WIDTH / 2);
         piece.setY(JTetris.HEIGHT);
+        piece.setRotationState('0');
 
-        piece.setBody(parsePoints(pieceString));
+        // generate the other 3 rotations
+        // their coordinates will be both 0 (un-initialized)
+        // but will be updated whenever nextRotation() is called
+
+        // first rotation (90 degrees counterclockwise)
+        Point[] oneRotation = new Point[piece.getBody().length];
+        // find the top left corner of the previous - used to find next coordinates
+        int x = 0, y = piece.getHeight();
+        for (int i = 0; i < oneRotation.length; i ++ )
+            oneRotation[i] = new Point(y - 1 - (int)(piece.getBody()[i].getY()), (int)piece.getBody()[i].getX() - x);
+
+        TetrisPiece one = generatePiece(oneRotation);
+        one.setRotationState('L');
+
+        // second rotation (180 degrees counterclockwise)
+        Point[] twoRotation = new Point[piece.getBody().length];
+        // find the top left corner of the previous
+        x = 0; y = one.getHeight();
+        for (int i = 0; i < twoRotation.length; i ++ )
+            twoRotation[i] = new Point(y - 1 - (int)(one.getBody()[i].getY()), (int)one.getBody()[i].getX() - x);
+
+        TetrisPiece two = generatePiece(twoRotation);
+        two.setRotationState('2');
+
+        // third rotation (270 degrees counterclockwise)
+        Point[] threeRotation = new Point[piece.getBody().length];
+        // find the top left corner of the previous
+        x = 0; y = two.getHeight();
+        for (int i = 0; i < threeRotation.length; i ++ )
+            threeRotation[i] = new Point(y - 1 - (int)(two.getBody()[i].getY()), (int)two.getBody()[i].getX() - x);
+
+        TetrisPiece three = generatePiece(threeRotation);
+        three.setRotationState('R');
+
+        // link the pieces all together
+        piece.setNext(one);
+        one.setNext(two);
+        two.setNext(three);
+        three.setNext(piece);
+
+        // find the anchor points for each piece...
+        int anchorIndex = -1;
+        boolean isSquare = false, isLine = false;
+        // ASSUMES THAT THERE ARE ONLY 7 VALID INPUTS, READ ABOVE
+        switch (pieceString) {
+            case J:
+            case LD:
+                anchorIndex = 1; // the 2nd point is the anchor
+                break;
+            case L:
+            case RD:
+            case T:
+                anchorIndex = 2; // the 3rd point is the anchor
+                break;
+            case S:
+                isSquare = true;
+                break;
+            case I:
+                isLine = true;
+                break;
+        }
+
+
+        if (isSquare) {
+            piece.setAnchor(3);
+            one.setAnchor(2);
+            two.setAnchor(0);
+            three.setAnchor(1);
+        }
+        else if (isLine) {
+            piece.setAnchor(2);
+            one.setAnchor(2);
+            two.setAnchor(1);
+            three.setAnchor(1);
+        }
+        else {
+            piece.setAnchor(anchorIndex);
+            one.setAnchor(anchorIndex);
+            two.setAnchor(anchorIndex);
+            three.setAnchor(anchorIndex);
+        }
+
+        return piece;
+    }
+
+    /**
+     * A helper method to create and return
+     * a Piece that is 90 degrees rotated
+     * counter-clockwise from the input
+     *
+     * Calculate store body, height, width, calculate skirts
+     *
+     * @param points
+     * @return
+     */
+    private static TetrisPiece generatePiece(Point[] points) {
+
+        TetrisPiece piece = new TetrisPiece();
+
+        piece.setBody(points);
 
         int maxRow = 0, maxCol = 0;
         // go through the Point array, find max row and col ==> height and width
@@ -77,22 +188,19 @@ public final class TetrisPiece extends Piece {
         return piece;
     }
 
-    /**
-     * A helper method to create and return
-     * a Piece that is 90 degrees rotated
-     * counter-clockwise from the input
-     *
-     * @param piece
-     * @return
-     */
-    private static TetrisPiece getRotation(TetrisPiece piece) {
-        return null;
+    @Override
+    public Piece nextRotation() {
+        // use the anchor pieces to align the anchor points
+        int offsetX = (int)(getAnchor().getX() - ((TetrisPiece)next).getAnchor().getX());
+        int offsetY = (int)(getAnchor().getY() - ((TetrisPiece)next).getAnchor().getY());
+
+        // place the next piece where the current one is
+        ((TetrisPiece)next).setX(getX() + offsetX);
+        ((TetrisPiece)next).setY(getY() + offsetY);
+
+        return next;
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public int getWidth() {
         return this.width;
@@ -102,10 +210,6 @@ public final class TetrisPiece extends Piece {
         this.width = width;
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public int getHeight() {
         return this.height;
@@ -115,10 +219,6 @@ public final class TetrisPiece extends Piece {
         this.height = height;
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public Point[] getBody() {
         return this.body;
@@ -136,21 +236,27 @@ public final class TetrisPiece extends Piece {
     /**
      * Compares the Point[] bodies
      *
-     * Assumes that the coordinates
-     * are stored in the same order
-     * (which is sometime we can control)
+     * We cannot assume the Point[]
+     * is in the same order
      *
      * @param other
      * @return
-     */
+     */ //TODO testing
     @Override
     public boolean equals(Object other) {
         if (!(other instanceof TetrisPiece))
             return false;
         Piece o = (TetrisPiece) other;
-        for (int i = 0 ; i < this.getBody().length; i++)
-            if (!this.getBody()[i].equals(o.getBody()[i]))
-                return false;
+        for (int i = 0 ; i < this.getBody().length; i++) {
+            Point p = getBody()[i];
+            boolean found = false;
+            for (int j = 0; j < o.getBody().length; j++) {
+                if (p.equals(o.getBody()[i]))
+                    found = true;
+            }
+            if (!found)
+                return false; // there is a coordinate in this that is not in other
+        }
         return true;
     }
 
@@ -170,14 +276,31 @@ public final class TetrisPiece extends Piece {
         this.y = y;
     }
 
-    public void setBody(Point[] body) {
+    private void setBody(Point[] body) {
         this.body = body;
     }
 
-    public void setSkirt(int[] skirt) { this.skirt = skirt; }
+    private void setSkirt(int[] skirt) { this.skirt = skirt; }
 
-    public void setLSkirt(int[] lSkirt) { this.lSkirt = lSkirt; }
+    private void setLSkirt(int[] lSkirt) { this.lSkirt = lSkirt; }
 
-    public void setRSkirt(int[] rSkirt) { this.rSkirt = rSkirt; }
+    private void setRSkirt(int[] rSkirt) { this.rSkirt = rSkirt; }
 
+    private void setNext(Piece next) { this.next = next; }
+
+    public char getRotationState() {
+        return rotationState;
+    }
+
+    private void setRotationState(char rotationState) {
+        this.rotationState = rotationState;
+    }
+
+    private Point getAnchor() {
+        return anchor;
+    }
+
+    private void setAnchor(int anchorIndex) {
+        this.anchor = getBody()[anchorIndex];
+    }
 }

@@ -81,7 +81,7 @@ public final class TetrisBoard implements Board {
                 placePos();
                 lastResult = Result.SUCCESS;
                 return Result.SUCCESS;
-            case DOWN:
+            case DOWN: // TODO implement row clearing
                 // check if the piece has reached the ground
                 if (piece.getY() == 0) {
                     updateMaxHeight();
@@ -104,7 +104,7 @@ public final class TetrisBoard implements Board {
                 placePos();
                 lastResult = Result.SUCCESS;
                 return Result.SUCCESS;
-            case DROP:
+            case DROP: // TODO implement row clearing
                 // should always be able to drop, assuming the current piece is in a valid position
                 clearCurrentPos();
                 piece.setY(piece.getY() - dropHeight(piece, piece.getX()));
@@ -114,11 +114,31 @@ public final class TetrisBoard implements Board {
                 lastResult = Result.PLACE;
                 return Result.PLACE;
             case CLOCKWISE:
-                // TODO
-                break;
+                // TODO implement correctly - WALLKICKS
+
+                // this is just to see if nextRotation and all that works
+                // doesn't account for bumping into anything
+                clearCurrentPos();
+                piece = (TetrisPiece)piece.nextRotation().nextRotation().nextRotation();
+                placePos();
+                lastResult = Result.SUCCESS;
+                return Result.SUCCESS;
+                // UP TO HERE IS TEMPORARY
+
+//               break;
             case COUNTERCLOCKWISE:
-                // TODO
-                break;
+                // TODO implement correctly - WALLKICKS
+
+                // this is just to see if nextRotation and all that works
+                // doesn't account for bumping into anything
+                clearCurrentPos();
+                piece = (TetrisPiece)piece.nextRotation();
+                placePos();
+                lastResult = Result.SUCCESS;
+                return Result.SUCCESS;
+                // UP TO HERE IS TEMPORARY
+
+//                break;
             case NOTHING:
                 lastResult = Result.SUCCESS;
                 return Result.SUCCESS;
