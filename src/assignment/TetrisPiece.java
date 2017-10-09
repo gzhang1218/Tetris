@@ -16,6 +16,8 @@ public final class TetrisPiece extends Piece {
     private Point anchor;
     private int[] skirt, lSkirt, rSkirt;
     private char rotationState;
+    private boolean isI;
+
 
     static final String I = "0 0  1 0  2 0  3 0";
     static final String J = "0 1  1 1  2 1  2 0";
@@ -89,12 +91,22 @@ public final class TetrisPiece extends Piece {
         // ASSUMES THAT THERE ARE ONLY 7 VALID INPUTS, READ ABOVE
         switch (pieceString) {
             case J:
-            case LD:
+                // reassign the rotationStates to align with the website for J, L, T
+                piece.setRotationState('2');
+                one.setRotationState('R');
+                two.setRotationState('0');
+                two.setRotationState('L');
+            case RD:
                 anchorIndex = 1; // the 2nd point is the anchor
                 break;
             case L:
-            case RD:
             case T:
+                // reassign the rotationStates to align with the website for J, L, T
+                piece.setRotationState('2');
+                one.setRotationState('R');
+                two.setRotationState('0');
+                two.setRotationState('L');
+            case LD:
                 anchorIndex = 2; // the 3rd point is the anchor
                 break;
             case S:
@@ -107,22 +119,28 @@ public final class TetrisPiece extends Piece {
 
 
         if (isSquare) {
-            piece.setAnchor(3);
-            one.setAnchor(2);
-            two.setAnchor(0);
-            three.setAnchor(1);
+            piece.setAnchor(new Point(1,1));
+            one.setAnchor(new Point(1,1));
+            two.setAnchor(new Point(1,1));
+            three.setAnchor(new Point(1,1));
         }
         else if (isLine) {
-            piece.setAnchor(2);
-            one.setAnchor(2);
-            two.setAnchor(1);
-            three.setAnchor(1);
+            piece.setAnchor(new Point(2,0));
+            one.setAnchor(new Point(1,2));
+            two.setAnchor(new Point(2,1));
+            three.setAnchor(new Point(0,2));
+
+            // mark these as "I" pieces
+            piece.setI(true);
+            one.setI(true);
+            two.setI(true);
+            three.setI(true);
         }
         else {
-            piece.setAnchor(anchorIndex);
-            one.setAnchor(anchorIndex);
-            two.setAnchor(anchorIndex);
-            three.setAnchor(anchorIndex);
+            piece.setAnchor(piece.getBody()[anchorIndex]);
+            one.setAnchor(one.getBody()[anchorIndex]);
+            two.setAnchor(two.getBody()[anchorIndex]);
+            three.setAnchor(three.getBody()[anchorIndex]);
         }
 
         return piece;
@@ -296,11 +314,27 @@ public final class TetrisPiece extends Piece {
         this.rotationState = rotationState;
     }
 
-    private Point getAnchor() {
+    public Point getAnchor() {
         return anchor;
+    } //TODO set back to private
+
+    private void setAnchor(Point anchor) {
+        this.anchor = anchor;
     }
 
-    private void setAnchor(int anchorIndex) {
-        this.anchor = getBody()[anchorIndex];
+    public boolean isI() {
+        return isI;
+    }
+
+    private void setI(boolean i) {
+        isI = i;
+    }
+
+    @Override
+    public String toString() {
+        String result = "Piece is at (" + getX() + ", " + getY() + ") and has body: ";
+        for (Point point : getBody())
+            result += point.getX() + " " + point.getY() + "  ";
+        return result;
     }
 }

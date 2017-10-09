@@ -21,6 +21,170 @@ public final class TetrisBoard implements Board {
     private int maxHeight; // initialized at 0
     private int[] colHeights;
 
+    // these hold the wall kick data
+    // access the offsets by ARRAY_NAME[test# - 0based][character of current rotationState][0 or 1 for x or y]
+    static final int[][][] CCW_WALL_KICK_DATA;
+    static final int[][][] CW_WALL_KICK_DATA;
+    static final int[][][] CCW_I_WALL_KICK_DATA;
+    static final int[][][] CW_I_WALL_KICK_DATA;
+
+    static {
+        CCW_WALL_KICK_DATA = new int[4]['R' + 1][2];
+        CW_WALL_KICK_DATA = new int[4]['R' + 1][2];
+        CCW_I_WALL_KICK_DATA = new int[4]['R' + 1][2];
+        CW_I_WALL_KICK_DATA = new int[4]['R' + 1][2];
+
+        // counterclockwise - normal
+        CCW_WALL_KICK_DATA[0]['0'][0] = 1;
+        CCW_WALL_KICK_DATA[0]['0'][1] = 0;
+        CCW_WALL_KICK_DATA[0]['L'][0] = -1;
+        CCW_WALL_KICK_DATA[0]['L'][1] = 0;
+        CCW_WALL_KICK_DATA[0]['2'][0] = -1;
+        CCW_WALL_KICK_DATA[0]['2'][1] = 0;
+        CCW_WALL_KICK_DATA[0]['R'][0] = 1;
+        CCW_WALL_KICK_DATA[0]['R'][1] = 0;
+
+        CCW_WALL_KICK_DATA[1]['0'][0] = 1;
+        CCW_WALL_KICK_DATA[1]['0'][1] = 1;
+        CCW_WALL_KICK_DATA[1]['L'][0] = -1;
+        CCW_WALL_KICK_DATA[1]['L'][1] = -1;
+        CCW_WALL_KICK_DATA[1]['2'][0] = -1;
+        CCW_WALL_KICK_DATA[1]['2'][1] = 1;
+        CCW_WALL_KICK_DATA[1]['R'][0] = 1;
+        CCW_WALL_KICK_DATA[1]['R'][1] = -1;
+
+        CCW_WALL_KICK_DATA[2]['0'][0] = 0;
+        CCW_WALL_KICK_DATA[2]['0'][1] = -2;
+        CCW_WALL_KICK_DATA[2]['L'][0] = 0;
+        CCW_WALL_KICK_DATA[2]['L'][1] = 2;
+        CCW_WALL_KICK_DATA[2]['2'][0] = 0;
+        CCW_WALL_KICK_DATA[2]['2'][1] = -2;
+        CCW_WALL_KICK_DATA[2]['R'][0] = 0;
+        CCW_WALL_KICK_DATA[2]['R'][1] = 2;
+
+        CCW_WALL_KICK_DATA[3]['0'][0] = 1;
+        CCW_WALL_KICK_DATA[3]['0'][1] = -2;
+        CCW_WALL_KICK_DATA[3]['L'][0] = -1;
+        CCW_WALL_KICK_DATA[3]['L'][1] = 2;
+        CCW_WALL_KICK_DATA[3]['2'][0] = -1;
+        CCW_WALL_KICK_DATA[3]['2'][1] = -2;
+        CCW_WALL_KICK_DATA[3]['R'][0] = 1;
+        CCW_WALL_KICK_DATA[3]['R'][1] = 2;
+
+        // clockwise - normal
+        CW_WALL_KICK_DATA[0]['0'][0] = -1;
+        CW_WALL_KICK_DATA[0]['0'][1] = 0;
+        CW_WALL_KICK_DATA[0]['L'][0] = -1;
+        CW_WALL_KICK_DATA[0]['L'][1] = 0;
+        CW_WALL_KICK_DATA[0]['2'][0] = 1;
+        CW_WALL_KICK_DATA[0]['2'][1] = 0;
+        CW_WALL_KICK_DATA[0]['R'][0] = 1;
+        CW_WALL_KICK_DATA[0]['R'][1] = 0;
+
+        CW_WALL_KICK_DATA[1]['0'][0] = -1;
+        CW_WALL_KICK_DATA[1]['0'][1] = 1;
+        CW_WALL_KICK_DATA[1]['L'][0] = -1;
+        CW_WALL_KICK_DATA[1]['L'][1] = -1;
+        CW_WALL_KICK_DATA[1]['2'][0] = 1;
+        CW_WALL_KICK_DATA[1]['2'][1] = 1;
+        CW_WALL_KICK_DATA[1]['R'][0] = 1;
+        CW_WALL_KICK_DATA[1]['R'][1] = -1;
+
+        CW_WALL_KICK_DATA[2]['0'][0] = 0;
+        CW_WALL_KICK_DATA[2]['0'][1] = -2;
+        CW_WALL_KICK_DATA[2]['L'][0] = 0;
+        CW_WALL_KICK_DATA[2]['L'][1] = 2;
+        CW_WALL_KICK_DATA[2]['2'][0] = 0;
+        CW_WALL_KICK_DATA[2]['2'][1] = -2;
+        CW_WALL_KICK_DATA[2]['R'][0] = 0;
+        CW_WALL_KICK_DATA[2]['R'][1] = 2;
+
+        CW_WALL_KICK_DATA[3]['0'][0] = -1;
+        CW_WALL_KICK_DATA[3]['0'][1] = -2;
+        CW_WALL_KICK_DATA[3]['L'][0] = -1;
+        CW_WALL_KICK_DATA[3]['L'][1] = 2;
+        CW_WALL_KICK_DATA[3]['2'][0] = 1;
+        CW_WALL_KICK_DATA[3]['2'][1] = -2;
+        CW_WALL_KICK_DATA[3]['R'][0] = 1;
+        CW_WALL_KICK_DATA[3]['R'][1] = 2;
+
+        // counterclockwise - I piece
+        CCW_I_WALL_KICK_DATA[0]['0'][0] = -1;
+        CCW_I_WALL_KICK_DATA[0]['0'][1] = 0;
+        CCW_I_WALL_KICK_DATA[0]['L'][0] = -2;
+        CCW_I_WALL_KICK_DATA[0]['L'][1] = 0;
+        CCW_I_WALL_KICK_DATA[0]['2'][0] = 1;
+        CCW_I_WALL_KICK_DATA[0]['2'][1] = 0;
+        CCW_I_WALL_KICK_DATA[0]['R'][0] = 2;
+        CCW_I_WALL_KICK_DATA[0]['R'][1] = 0;
+
+        CCW_I_WALL_KICK_DATA[1]['0'][0] = 2;
+        CCW_I_WALL_KICK_DATA[1]['0'][1] = 0;
+        CCW_I_WALL_KICK_DATA[1]['L'][0] = 1;
+        CCW_I_WALL_KICK_DATA[1]['L'][1] = 0;
+        CCW_I_WALL_KICK_DATA[1]['2'][0] = -2;
+        CCW_I_WALL_KICK_DATA[1]['2'][1] = 0;
+        CCW_I_WALL_KICK_DATA[1]['R'][0] = -1;
+        CCW_I_WALL_KICK_DATA[1]['R'][1] = 0;
+
+        CCW_I_WALL_KICK_DATA[2]['0'][0] = -1;
+        CCW_I_WALL_KICK_DATA[2]['0'][1] = 2;
+        CCW_I_WALL_KICK_DATA[2]['L'][0] = -2;
+        CCW_I_WALL_KICK_DATA[2]['L'][1] = -1;
+        CCW_I_WALL_KICK_DATA[2]['2'][0] = 1;
+        CCW_I_WALL_KICK_DATA[2]['2'][1] = -2;
+        CCW_I_WALL_KICK_DATA[2]['R'][0] = 2;
+        CCW_I_WALL_KICK_DATA[2]['R'][1] = 1;
+
+        CCW_I_WALL_KICK_DATA[3]['0'][0] = 2;
+        CCW_I_WALL_KICK_DATA[3]['0'][1] = -1;
+        CCW_I_WALL_KICK_DATA[3]['L'][0] = 1;
+        CCW_I_WALL_KICK_DATA[3]['L'][1] = 2;
+        CCW_I_WALL_KICK_DATA[3]['2'][0] = -2;
+        CCW_I_WALL_KICK_DATA[3]['2'][1] = 1;
+        CCW_I_WALL_KICK_DATA[3]['R'][0] = -1;
+        CCW_I_WALL_KICK_DATA[3]['R'][1] = -2;
+
+        // clockwise - I piece
+        CW_I_WALL_KICK_DATA[0]['0'][0] = -2;
+        CW_I_WALL_KICK_DATA[0]['0'][1] = 0;
+        CW_I_WALL_KICK_DATA[0]['L'][0] = 1;
+        CW_I_WALL_KICK_DATA[0]['L'][1] = 0;
+        CW_I_WALL_KICK_DATA[0]['2'][0] = 2;
+        CW_I_WALL_KICK_DATA[0]['2'][1] = 0;
+        CW_I_WALL_KICK_DATA[0]['R'][0] = -1;
+        CW_I_WALL_KICK_DATA[0]['R'][1] = 0;
+
+        CW_I_WALL_KICK_DATA[1]['0'][0] = 1;
+        CW_I_WALL_KICK_DATA[1]['0'][1] = 0;
+        CW_I_WALL_KICK_DATA[1]['L'][0] = -2;
+        CW_I_WALL_KICK_DATA[1]['L'][1] = 0;
+        CW_I_WALL_KICK_DATA[1]['2'][0] = -1;
+        CW_I_WALL_KICK_DATA[1]['2'][1] = 0;
+        CW_I_WALL_KICK_DATA[1]['R'][0] = 2;
+        CW_I_WALL_KICK_DATA[1]['R'][1] = 0;
+
+        CW_I_WALL_KICK_DATA[2]['0'][0] = -2;
+        CW_I_WALL_KICK_DATA[2]['0'][1] = -1;
+        CW_I_WALL_KICK_DATA[2]['L'][0] = 1;
+        CW_I_WALL_KICK_DATA[2]['L'][1] = -2;
+        CW_I_WALL_KICK_DATA[2]['2'][0] = 2;
+        CW_I_WALL_KICK_DATA[2]['2'][1] = 1;
+        CW_I_WALL_KICK_DATA[2]['R'][0] = -1;
+        CW_I_WALL_KICK_DATA[2]['R'][1] = 2;
+
+        CW_I_WALL_KICK_DATA[3]['0'][0] = 1;
+        CW_I_WALL_KICK_DATA[3]['0'][1] = 2;
+        CW_I_WALL_KICK_DATA[3]['L'][0] = -2;
+        CW_I_WALL_KICK_DATA[3]['L'][1] = 1;
+        CW_I_WALL_KICK_DATA[3]['2'][0] = -1;
+        CW_I_WALL_KICK_DATA[3]['2'][1] = -2;
+        CW_I_WALL_KICK_DATA[3]['R'][0] = 2;
+        CW_I_WALL_KICK_DATA[3]['R'][1] = -1;
+    }
+
+
+
     // JTetris will use this constructor
     public TetrisBoard(int width, int height) {
         board = new boolean[height][width];
@@ -81,11 +245,14 @@ public final class TetrisBoard implements Board {
                 placePos();
                 lastResult = Result.SUCCESS;
                 return Result.SUCCESS;
-            case DOWN: // TODO implement row clearing
+            case DOWN:
                 // check if the piece has reached the ground
                 if (piece.getY() == 0) {
                     updateMaxHeight();
                     updateColHeights();
+
+                    clearRows();
+
                     lastResult = Result.PLACE;
                     return Result.PLACE;
                 }
@@ -94,6 +261,9 @@ public final class TetrisBoard implements Board {
                     if (board[piece.getY() - 1 + piece.getSkirt()[offset]][piece.getX() + offset]) {
                         updateMaxHeight();
                         updateColHeights();
+
+                        clearRows();
+
                         lastResult = Result.PLACE;
                         return Result.PLACE;
                     }
@@ -104,41 +274,107 @@ public final class TetrisBoard implements Board {
                 placePos();
                 lastResult = Result.SUCCESS;
                 return Result.SUCCESS;
-            case DROP: // TODO implement row clearing
+            case DROP:
                 // should always be able to drop, assuming the current piece is in a valid position
                 clearCurrentPos();
                 piece.setY(piece.getY() - dropHeight(piece, piece.getX()));
                 placePos();
-                updateMaxHeight();
-                updateColHeights();
-                lastResult = Result.PLACE;
-                return Result.PLACE;
-            case CLOCKWISE:
-                // TODO implement correctly - WALLKICKS
 
-                // this is just to see if nextRotation and all that works
-                // doesn't account for bumping into anything
-                clearCurrentPos();
-                piece = (TetrisPiece)piece.nextRotation().nextRotation().nextRotation();
-                placePos();
                 lastResult = Result.SUCCESS;
                 return Result.SUCCESS;
-                // UP TO HERE IS TEMPORARY
+            case CLOCKWISE: // TODO fix bug where you can't rotate a certain way on either edge
 
-//               break;
+                clearCurrentPos();
+
+                // check if simple rotate is valid
+                TetrisPiece temp = (TetrisPiece)piece.nextRotation().nextRotation().nextRotation();
+                boolean simpleRotateWorks = isValid(temp);
+
+                if (simpleRotateWorks) {
+                    piece = (TetrisPiece)piece.nextRotation().nextRotation().nextRotation();
+                    lastResult = Result.SUCCESS;
+                } else { // need to check wall kicks..... :(
+                    // FOUR TESTS TO CHECK, DEPENDS ON IDENTITY OF TETRONIMO, WHICH ORIENTATION IT'S IN AND GOING TO
+                    TetrisPiece kicked;
+                    for (int test = 0; test < 4; test++ ) {
+                        int xOffset, yOffset;
+                        if(piece.isI()) {
+                            xOffset = CW_I_WALL_KICK_DATA[test][piece.getRotationState()][0];
+                            yOffset = CW_I_WALL_KICK_DATA[test][piece.getRotationState()][1];
+                        } else {
+                            xOffset = CW_WALL_KICK_DATA[test][piece.getRotationState()][0];
+                            yOffset = CW_WALL_KICK_DATA[test][piece.getRotationState()][1];
+                        }
+
+                        kicked = (TetrisPiece)piece.nextRotation().nextRotation().nextRotation();
+
+                        kicked.setX(kicked.getX() + xOffset);
+                        kicked.setY(kicked.getY() + yOffset);
+
+                        if (isValid(kicked)) {
+                            piece = (TetrisPiece)piece.nextRotation().nextRotation().nextRotation();
+                            piece.setX(kicked.getX() + xOffset);
+                            piece.setY(kicked.getY() + yOffset);
+                            lastResult = Result.SUCCESS;
+                            break;
+                        }
+
+                    }
+                    // if we don't find a valid kick, then don't change 'piece' and have OUTOFBOUNDS return
+                    lastResult = Result.OUT_BOUNDS;
+                }
+
+                // at this point, piece should either be reassigned or left untouched
+                // last result should be updated (SUCCESS, OUTOFBOUNDS)
+                placePos();
+                return lastResult;
+
             case COUNTERCLOCKWISE:
-                // TODO implement correctly - WALLKICKS
 
-                // this is just to see if nextRotation and all that works
-                // doesn't account for bumping into anything
                 clearCurrentPos();
-                piece = (TetrisPiece)piece.nextRotation();
-                placePos();
-                lastResult = Result.SUCCESS;
-                return Result.SUCCESS;
-                // UP TO HERE IS TEMPORARY
 
-//                break;
+                // check if simple rotate is valid
+                temp = (TetrisPiece)piece.nextRotation();
+                simpleRotateWorks = isValid(temp);
+
+                if (simpleRotateWorks) {
+                    piece = (TetrisPiece)piece.nextRotation();
+                    lastResult = Result.SUCCESS;
+                } else { // need to check wall kicks..... :(
+                    // FOUR TESTS TO CHECK, DEPENDS ON IDENTITY OF TETRONIMO, WHICH ORIENTATION IT'S IN AND GOING TO
+                    TetrisPiece kicked;
+                    for (int test = 0; test < 4; test++ ) {
+                        int xOffset, yOffset;
+                        if(piece.isI()) {
+                            xOffset = CCW_I_WALL_KICK_DATA[test][piece.getRotationState()][0];
+                            yOffset = CCW_I_WALL_KICK_DATA[test][piece.getRotationState()][1];
+                        } else {
+                            xOffset = CCW_WALL_KICK_DATA[test][piece.getRotationState()][0];
+                            yOffset = CCW_WALL_KICK_DATA[test][piece.getRotationState()][1];
+                        }
+
+                        kicked = (TetrisPiece)piece.nextRotation();
+
+                        kicked.setX(kicked.getX() + xOffset);
+                        kicked.setY(kicked.getY() + yOffset);
+
+                        if (isValid(kicked)) {
+                            piece = (TetrisPiece)piece.nextRotation();
+                            piece.setX(kicked.getX() + xOffset);
+                            piece.setY(kicked.getY() + yOffset);
+                            lastResult = Result.SUCCESS;
+                            break;
+                        }
+                    }
+                    // if we don't find a valid kick, then don't change 'piece' and have OUTOFBOUNDS return
+                    lastResult = Result.OUT_BOUNDS;
+                }
+
+                // at this point, piece should either be reassigned or left untouched
+                // last result should be updated (SUCCESS, OUTOFBOUNDS)
+                placePos();
+                return lastResult;
+
             case NOTHING:
                 lastResult = Result.SUCCESS;
                 return Result.SUCCESS;
@@ -146,6 +382,8 @@ public final class TetrisBoard implements Board {
                 // TODO implement for karma
                 break;
         }
+
+
 
 
         return Result.NO_PIECE;
@@ -173,6 +411,65 @@ public final class TetrisBoard implements Board {
             if (colHeights[x] < y)
                 colHeights[x] = y;
         }
+    }
+
+    /**
+     * Checks if the provided piece would fit on the board as is
+     * -both in bounds and not on top of anything
+     *
+     * @param piece
+     * @return
+     */
+    private boolean isValid(TetrisPiece piece) {
+        for (Point offset : piece.getBody()) {
+            if (piece.getX() + (int) offset.getX() < 0 || piece.getX() + (int) offset.getX() >= JTetris.WIDTH) {
+                return false;
+            }
+            if (piece.getY() + (int) offset.getY() < 0 || piece.getY() + (int) offset.getY() >= JTetris.HEIGHT) {
+                return false;
+            }
+            if /*occupied*/ (getGrid(piece.getX() + (int) offset.getX(), piece.getY() + (int) offset.getY())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * This method will check if any rows are full, following a PLACE result.
+     * It will update the rowsCleared attribute accordingly,
+     * as well at the maxHeight and colHeights
+     */
+    private void clearRows() {
+        int fullRowCount = 0;
+
+        // moving from the bottom up, counting full rows and shifting non-full rows down by 'fullRowCount'
+        for (int row = 0; row < JTetris.HEIGHT; row++ ) {
+            if (isFull(row)) {
+                fullRowCount++;
+                continue;
+            } else {
+                if (fullRowCount > 0) { // not a shift by 0
+                    for (int col = 0; col < JTetris.WIDTH; col++)
+                        board[row - fullRowCount][col] = board[row][col];
+                }
+            }
+        }
+
+        rowsCleared = fullRowCount;
+
+        maxHeight -= fullRowCount;
+        for (int col = 0 ; col < JTetris.WIDTH; col ++ )
+            colHeights[col] = colHeights[col] - fullRowCount;
+
+    }
+
+    private boolean isFull(int row) {
+        for (int col = 0; col < JTetris.WIDTH; col++) {
+            if (!getGrid(col, row))
+                return false;
+        }
+        return true;
     }
 
     @Override
@@ -259,7 +556,7 @@ public final class TetrisBoard implements Board {
         for (int col = 0; col < getWidth(); col++)
             if (board[y][col])
                 count++;
-        return -1;
+        return count;
     }
 
     @Override
