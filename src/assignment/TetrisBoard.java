@@ -472,10 +472,20 @@ public final class TetrisBoard implements Board {
         return true;
     }
 
+    // TODO need to figure out a way of simulating moves without actually changing anything
     @Override
     public Board testMove(Action act) {
-        // TODO
-        return null;
+        /*Board savedBoard = new TetrisBoard(this.getHeight(),this.getWidth());
+        savedBoard = this;*/
+        //TEMPORARY HACKY METHOD JUST TO GET BRAIN TO WORK
+        boolean[][] savedBoard = board;
+        int[] savedColHeights = colHeights;
+        move(act);
+        Board changedBoard = this;
+        board = savedBoard;
+        colHeights = savedColHeights;
+
+        return changedBoard;
     }
 
     @Override
