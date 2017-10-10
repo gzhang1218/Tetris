@@ -478,14 +478,15 @@ public final class TetrisBoard implements Board {
         /*Board savedBoard = new TetrisBoard(this.getHeight(),this.getWidth());
         savedBoard = this;*/
         //TEMPORARY HACKY METHOD JUST TO GET BRAIN TO WORK
-        boolean[][] savedBoard = board;
-        int[] savedColHeights = colHeights;
-        move(act);
-        Board changedBoard = this;
+        /*boolean[][] savedBoard = board;
+        int[] savedColHeights = colHeights;*/
+        Board tempBoard = this;
+        tempBoard.move(act);
+        /*Board changedBoard = this;
         board = savedBoard;
-        colHeights = savedColHeights;
+        colHeights = savedColHeights;*/
 
-        return changedBoard;
+        return tempBoard;
     }
 
     @Override
