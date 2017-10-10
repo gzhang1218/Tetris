@@ -95,7 +95,7 @@ public final class TetrisPiece extends Piece {
                 piece.setRotationState('2');
                 one.setRotationState('R');
                 two.setRotationState('0');
-                two.setRotationState('L');
+                three.setRotationState('L');
             case RD:
                 anchorIndex = 1; // the 2nd point is the anchor
                 break;
@@ -105,7 +105,7 @@ public final class TetrisPiece extends Piece {
                 piece.setRotationState('2');
                 one.setRotationState('R');
                 two.setRotationState('0');
-                two.setRotationState('L');
+                three.setRotationState('L');
             case LD:
                 anchorIndex = 2; // the 3rd point is the anchor
                 break;
