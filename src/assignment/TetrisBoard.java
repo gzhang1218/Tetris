@@ -1,6 +1,7 @@
 package assignment;
 
 import java.awt.*;
+import java.util.Arrays;
 
 /**
  * Represents a Tetris board -- essentially a 2-d grid of booleans. Supports
@@ -282,7 +283,7 @@ public final class TetrisBoard implements Board {
 
                 lastResult = Result.SUCCESS;
                 return Result.SUCCESS;
-            case CLOCKWISE: // TODO fix bug where you can't rotate a certain way on either edge
+            case CLOCKWISE:
 
                 clearCurrentPos();
 
@@ -449,12 +450,15 @@ public final class TetrisBoard implements Board {
                 fullRowCount++;
                 continue;
             } else {
-                if (fullRowCount > 0) { // not a shift by 0
-                    for (int col = 0; col < JTetris.WIDTH; col++)
+                if (fullRowCount > 0) // not a shift by 0
+                    for (int col = 0; col < getWidth(); col ++)
                         board[row - fullRowCount][col] = board[row][col];
-                }
             }
         }
+
+        // clear the top 'fullRowCount' rows
+        for (int rowCount = 0; rowCount < fullRowCount; rowCount ++)
+            Arrays.fill(board[JTetris.HEIGHT - 1 - rowCount], false);
 
         rowsCleared = fullRowCount;
 
