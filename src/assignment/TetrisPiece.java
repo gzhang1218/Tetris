@@ -18,7 +18,7 @@ public final class TetrisPiece extends Piece {
     private char rotationState;
     private boolean isI;
 
-
+    // assuming that the JTetris pieceStrings will not change
     static final String I = "0 0  1 0  2 0  3 0";
     static final String J = "0 1  1 1  2 1  2 0";
     static final String L = "0 0  0 1  1 1  2 1";

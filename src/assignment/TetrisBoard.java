@@ -201,10 +201,13 @@ public final class TetrisBoard implements Board {
      */
     @Override
     public Result move(Action act) {
-        if (piece == null)
-            return Result.NO_PIECE;
-
         lastAction = act;
+
+        if (piece == null) {
+            lastResult = Result.NO_PIECE;
+            return Result.NO_PIECE;
+        }
+
         rowsCleared = 0;
 
         switch (act) {
@@ -254,6 +257,8 @@ public final class TetrisBoard implements Board {
 
                     clearRows();
 
+                    piece = null;
+
                     lastResult = Result.PLACE;
                     return Result.PLACE;
                 }
@@ -264,6 +269,8 @@ public final class TetrisBoard implements Board {
                         updateColHeights();
 
                         clearRows();
+
+                        piece = null;
 
                         lastResult = Result.PLACE;
                         return Result.PLACE;
@@ -281,7 +288,7 @@ public final class TetrisBoard implements Board {
                 piece.setY(piece.getY() - dropHeight(piece, piece.getX()));
                 placePos();
 
-                lastResult = Result.SUCCESS;
+                lastResult = Result.SUCCESS; //TODO SanityTest wants this to be PLACE
                 return Result.SUCCESS;
             case CLOCKWISE:
 
