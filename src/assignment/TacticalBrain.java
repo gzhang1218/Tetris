@@ -11,7 +11,7 @@ public class TacticalBrain implements Brain {
     private double[] weights = new double[WEIGHTS];
 
     public TacticalBrain() {
-        weights = new double[]{2, 2, -2, -2};
+        weights = new double[]{-0.510066, 0.760666, -0.35663, -0.184483};
     }
 
     public double[] getWeights(){
@@ -97,6 +97,7 @@ public class TacticalBrain implements Brain {
     }
 
     private double scoreBoard(Board newBoard) {
+        //TODO add more variables??? Ex: edges touching another block, edges touching wall, edges touching floor
         //sum of all column heights, want to minimize this
         int totalHeight = 0;
         for (int i = 0; i < newBoard.getWidth(); i++) {
