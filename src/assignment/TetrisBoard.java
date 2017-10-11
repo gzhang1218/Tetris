@@ -484,13 +484,34 @@ public final class TetrisBoard implements Board {
         //TEMPORARY HACKY METHOD JUST TO GET BRAIN TO WORK
         /*boolean[][] savedBoard = board;
         int[] savedColHeights = colHeights;*/
-        Board tempBoard = this;
+        Board tempBoard = makeCopy();
         tempBoard.move(act);
         /*Board changedBoard = this;
         board = savedBoard;
         colHeights = savedColHeights;*/
 
         return tempBoard;
+    }
+
+    /**
+     * Needs to copy board, piece, lastAction, lastResult, rowsCleared, maxHeight, colHeight
+     * only board, piece, and colHeight are pointers
+     */
+    private TetrisBoard makeCopy() {
+        TetrisBoard copy = new TetrisBoard(getWidth(), getHeight()); //initializes the board[][] and colHeights[]
+
+        copy.setLastAction(this.getLastAction());
+        copy.setLastResult(this.getLastResult());
+        copy.setRowsCleared(this.getRowsCleared());
+        copy.setMaxHeight(this.getMaxHeight());
+        for (int col = 0; col < getWidth(); col++ )
+            copy.setColumnHeight(col, this.getColumnHeight(col));
+        for (int row = 0; row < getHeight(); row++ )
+            for (int col = 0; col < getWidth(); col++ )
+                copy.setGrid(row, col, this.getGrid(col, row));
+        copy.nextPiece(this.piece);
+
+        return copy;
     }
 
     @Override
@@ -522,15 +543,21 @@ public final class TetrisBoard implements Board {
         return lastResult;
     }
 
+    public void setLastResult(Result result) { this.lastResult = result; }
+
     @Override
     public Action getLastAction() {
         return lastAction;
     }
 
+    public void setLastAction(Action action) { this.lastAction = action; }
+
     @Override
     public int getRowsCleared() {
         return rowsCleared;
     }
+
+    public void setRowsCleared(int rowsCleared) { this.rowsCleared = rowsCleared; }
 
     @Override
     public int getWidth() {
@@ -545,6 +572,10 @@ public final class TetrisBoard implements Board {
     @Override
     public int getMaxHeight() {
         return maxHeight;
+    }
+
+    public void setMaxHeight(int maxHeight) {
+        this.maxHeight = maxHeight;
     }
 
     // TODO implement in constant time? This seems good enough though...?
@@ -564,6 +595,8 @@ public final class TetrisBoard implements Board {
         return colHeights[x];
     }
 
+    public void setColumnHeight(int col, int val) { this.colHeights[col] = val; }
+
     // TODO implement in constant time
     @Override
     public int getRowWidth(int y) {
@@ -580,5 +613,7 @@ public final class TetrisBoard implements Board {
             return true;
         return board[y][x];
     }
+
+    public void setGrid(int row, int col, boolean val) { board[row][col] = val; }
 
 }
