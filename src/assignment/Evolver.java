@@ -5,6 +5,7 @@ import java.io.*;
 
 public class Evolver {
 
+    private Board board;
     private int population = 1000;
     private TacticalBrainFitness[] brains = new TacticalBrainFitness[population];
     //private TacticalBrain[] testBrains = new TacticalBrain[population];
@@ -141,23 +142,50 @@ public class Evolver {
 
 
     public double[] mutate(double[] weights) {
-        if (rand.nextInt(100) < 10) {
+        if (rand.nextInt(100) < 15) {
             int weightIndex = rand.nextInt(weights.length);
-            weights[weightIndex] = weights[weightIndex] + (rand.nextDouble() * 0.4 - 0.2);
+            weights[weightIndex] = weights[weightIndex] + (rand.nextDouble() * 0.5 - 0.25);
         }
         return weights;
     }
 
-    public int gameSimulator(Brain brain) {
+    public int gameSimulator(Brain simBrain) {
         int score = 0;
-        while (score < 750)
-        {
-            //TODO Implement game simulation
-            break;
+
+        boolean gameOn;
+        Board.Action act;
+        board = new TetrisBoard(JTetris.WIDTH, JTetris.HEIGHT+JTetris.TOP_SPACE);
+        gameOn = true;
+
+        while (score < 750 && gameOn) {
+            act = simBrain.nextMove(board);
+            Board.Result result = board.move(act);
+            switch (result) {
+                case SUCCESS:
+                case OUT_BOUNDS:
+                    // The board is responsible for staying in a good state
+                    break;
+                case PLACE:
+                    if (board.getMaxHeight() > JTetris.HEIGHT) {
+                        gameOn = false;
+                    }
+                case NO_PIECE:
+                    if (gameOn) {
+                        board.nextPiece(pickNextPiece());
+                    }
+                    break;
+            }
+            score = score + board.getRowsCleared();
         }
-        //return score;
-        //for test purposes
-        return rand.nextInt(750);
+
+        System.out.println(score);
+        return score;
+    }
+
+    public Piece pickNextPiece() {
+        int pieceNum = (int) (JTetris.pieceStrings.length * rand.nextDouble());
+        Piece piece  = TetrisPiece.getPiece(JTetris.pieceStrings[pieceNum]);
+        return(piece);
     }
 }
 

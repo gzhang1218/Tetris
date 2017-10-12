@@ -390,10 +390,6 @@ public final class TetrisBoard implements Board {
                 // TODO implement for karma
                 break;
         }
-
-
-
-
         return Result.NO_PIECE;
     }
 

@@ -1,39 +1,40 @@
 package assignment;
 
-import java.awt.*;
-import javax.swing.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.Timer;
+
+import assignment.Board.Action;
+
+/**
+ * An extension of JTetris which runs an implementation of a Brain.
+ */
 public class JBrainTetris extends JTetris {
-    protected Brain brain;
-    protected boolean brainActive = true;
-    protected Board.Action nextMove;
+    /**
+     * The brain being used.
+     */
+    private Brain brain;
 
-
-    JBrainTetris() {
+    /**
+     * Creates a new JTetris running the given Brain.
+     * @param brain The brain to use.
+     */
+    public JBrainTetris(Brain brain) {
         super();
-        brain = new LameBrain();
-    }
 
-    /*public void stopGame() {
-        super.stopGame();
-    }*/
-
-    public void tick(Board.Action verb) {
-        if (!gameOn) {
-            return;
-        }
-        if (verb == Board.Action.DOWN && brainActive) {
-            nextMove = brain.nextMove(board);
-        }
-        if (nextMove != null) {
-            super.tick(nextMove);
-        }
-        super.tick(verb);
+        this.brain = brain;
+        this.timer = new Timer(DELAY, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Action act = brain.nextMove(JBrainTetris.this.board);
+                tick(act);
+            }
+        });
     }
 
     public static void main(String[] args) {
-        createGUI(new JBrainTetris());
+        // Replace LameBrain with your own Brain implementation.
+        createGUI(new JBrainTetris(new LameBrain()));
     }
-
 }
