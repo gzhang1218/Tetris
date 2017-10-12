@@ -10,7 +10,6 @@ import java.awt.*;
  */
 public final class TetrisPiece extends Piece {
 
-    private int x, y; // coordinate of bottom left
     private int height, width;
     private Point[] body;
     private Point anchor;
@@ -41,8 +40,6 @@ public final class TetrisPiece extends Piece {
     public static Piece getPiece(String pieceString) {
         // generate the given piece
         TetrisPiece piece = generatePiece(parsePoints(pieceString));
-        piece.setX(JTetris.WIDTH / 2);
-        piece.setY(JTetris.HEIGHT);
         piece.setRotationState('0');
 
         // generate the other 3 rotations
@@ -207,19 +204,6 @@ public final class TetrisPiece extends Piece {
     }
 
     @Override
-    public Piece nextRotation() {
-        // use the anchor pieces to align the anchor points
-        int offsetX = (int)(getAnchor().getX() - ((TetrisPiece)next).getAnchor().getX());
-        int offsetY = (int)(getAnchor().getY() - ((TetrisPiece)next).getAnchor().getY());
-
-        // place the next piece where the current one is
-        ((TetrisPiece)next).setX(getX() + offsetX);
-        ((TetrisPiece)next).setY(getY() + offsetY);
-
-        return next;
-    }
-
-    @Override
     public int getWidth() {
         return this.width;
     }
@@ -278,22 +262,6 @@ public final class TetrisPiece extends Piece {
         return true;
     }
 
-    public int getX() {
-        return x;
-    }
-
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public void setY(int y) {
-        this.y = y;
-    }
-
     private void setBody(Point[] body) {
         this.body = body;
     }
@@ -316,7 +284,7 @@ public final class TetrisPiece extends Piece {
 
     public Point getAnchor() {
         return anchor;
-    } //TODO set back to private
+    }
 
     private void setAnchor(Point anchor) {
         this.anchor = anchor;
@@ -330,33 +298,4 @@ public final class TetrisPiece extends Piece {
         isI = i;
     }
 
-    @Override
-    public String toString() {
-        String result = "Piece is at (" + getX() + ", " + getY() + ") and has body: ";
-        for (Point point : getBody())
-            result += point.getX() + " " + point.getY() + "  ";
-        return result;
-    }
-
-    public TetrisPiece getCopy() {
-        TetrisPiece piece = new TetrisPiece();
-
-        // copying over all instance variables
-        piece.setX(getX());
-        piece.setY(getY());
-        piece.setHeight(getHeight());
-        piece.setWidth(getWidth());
-        piece.setBody(getBody());
-        piece.setAnchor(getAnchor());
-        piece.setSkirt(getSkirt());
-        piece.setLSkirt(getLSkirt());
-        piece.setRSkirt(getRSkirt());
-        piece.setRotationState(getRotationState());
-        piece.setI(isI());
-
-        // assigning next to point to same next
-        piece.setNext(this.next); // this will break if the copied piece is rotated around a full circle
-
-        return piece;
-    }
 }

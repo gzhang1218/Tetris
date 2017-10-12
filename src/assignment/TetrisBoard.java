@@ -15,6 +15,10 @@ public final class TetrisBoard implements Board {
     private boolean[][] board;
 
     private TetrisPiece piece;
+    private Piece tempPiece; //TODO - done
+    private int x, y; // coordinate of the current piece //TODO - done
+    private int tempX, tempY; // temporary x and y values for testing //TODO - done
+
     private Action lastAction;
     private Result lastResult;
     private int rowsCleared; // initialized at 0
@@ -196,7 +200,6 @@ public final class TetrisBoard implements Board {
     /**
      * This method handles each action and returns the following result
      * It will update lastAction, lastResult, and rowsCleared before it returns
-
      */
     @Override
     public Result move(Action act) {
@@ -212,45 +215,45 @@ public final class TetrisBoard implements Board {
         switch (act) {
             case LEFT:
                 // check if the piece is on the left border
-                if (piece.getX() == 0) {
+                if (x == 0) { //TODO - done
                     lastResult = Result.OUT_BOUNDS;
                     return Result.OUT_BOUNDS;
                 }
                 // check if anything in the way to the left
                 for (int offset = 0; offset < piece.getHeight(); offset ++) {
-                    if (board[piece.getY() + offset][piece.getX() - 1 + piece.getLSkirt()[offset]]) {
+                    if (board[y + offset][x - 1 + piece.getLSkirt()[offset]]) { //TODO - done
                         lastResult = Result.OUT_BOUNDS;
                         return Result.OUT_BOUNDS;
                     }
                 }
                 // otherwise, shift to left
                 clearCurrentPos();
-                piece.setX(piece.getX() - 1);
+                x--; //TODO - done
                 placePos();
                 lastResult = Result.SUCCESS;
                 return Result.SUCCESS;
             case RIGHT:
                 // check if the piece is on the right border
-                if (piece.getX() + piece.getWidth() == JTetris.WIDTH) {
+                if (x + piece.getWidth() == JTetris.WIDTH) { //TODO - done
                     lastResult = Result.OUT_BOUNDS;
                     return Result.OUT_BOUNDS;
                 }
                 // check if anything in the way to the right
                 for (int offset = 0; offset < piece.getHeight(); offset ++) {
-                    if (board[piece.getY() + offset][piece.getX() + piece.getWidth() - piece.getRSkirt()[offset]]) {
+                    if (board[y + offset][x + piece.getWidth() - piece.getRSkirt()[offset]]) { //TODO - done
                         lastResult = Result.OUT_BOUNDS;
                         return Result.OUT_BOUNDS;
                     }
                 }
                 // otherwise, shift to the right
                 clearCurrentPos();
-                piece.setX(piece.getX() + 1);
+                x++; //TODO - done
                 placePos();
                 lastResult = Result.SUCCESS;
                 return Result.SUCCESS;
             case DOWN:
                 // check if the piece has reached the ground
-                if (piece.getY() == 0) {
+                if (y == 0) { //TODO - done
                     updateMaxHeight();
                     updateColHeights();
 
@@ -263,7 +266,7 @@ public final class TetrisBoard implements Board {
                 }
                 // check if the piece has anything under it
                 for (int offset = 0; offset < piece.getWidth(); offset ++) {
-                    if (board[piece.getY() - 1 + piece.getSkirt()[offset]][piece.getX() + offset]) {
+                    if (board[y - 1 + piece.getSkirt()[offset]][x + offset]) { //TODO - done
                         updateMaxHeight();
                         updateColHeights();
 
@@ -277,14 +280,14 @@ public final class TetrisBoard implements Board {
                 }
                 // otherwise, slide it down by one
                 clearCurrentPos();
-                piece.setY(piece.getY() - 1);
+                y--; //TODO - done
                 placePos();
                 lastResult = Result.SUCCESS;
                 return Result.SUCCESS;
             case DROP:
                 // should always be able to drop, assuming the current piece is in a valid position
                 clearCurrentPos();
-                piece.setY(dropHeight(piece, piece.getX()));
+                y = dropHeight(piece, x); //TODO - done
                 placePos();
 
                 lastResult = Result.SUCCESS;
@@ -294,15 +297,14 @@ public final class TetrisBoard implements Board {
                 clearCurrentPos();
 
                 // check if simple rotate is valid
-                TetrisPiece temp = (TetrisPiece)piece.nextRotation().nextRotation().nextRotation();
-                boolean simpleRotateWorks = isValid(temp);
+                testCW(); //TODO - done
+                boolean simpleRotateWorks = isValid(tempPiece);
 
                 if (simpleRotateWorks) {
-                    piece = (TetrisPiece)piece.nextRotation().nextRotation().nextRotation();
+                    rotateCW(); //TODO - done
                     lastResult = Result.SUCCESS;
                 } else { // need to check wall kicks..... :(
                     // FOUR TESTS TO CHECK, DEPENDS ON IDENTITY OF TETRONIMO, WHICH ORIENTATION IT'S IN AND GOING TO
-                    TetrisPiece kicked;
                     for (int test = 0; test < 4; test++ ) {
                         int xOffset, yOffset;
 
@@ -315,16 +317,11 @@ public final class TetrisBoard implements Board {
                             yOffset = CW_WALL_KICK_DATA[test][piece.getRotationState()][1];
                         }
 
-                        kicked = (TetrisPiece)piece.nextRotation().nextRotation().nextRotation();
-
-                        kicked.setX(kicked.getX() + xOffset);
-                        kicked.setY(kicked.getY() + yOffset);
+                        testCW(xOffset, yOffset); //TODO - done
 
                         // if we find a valid wall kick, take it, modify piece accordingly, and return SUCCESS
-                        if (isValid(kicked)) {
-                            piece = (TetrisPiece)piece.nextRotation().nextRotation().nextRotation();
-                            piece.setX(piece.getX() + xOffset);
-                            piece.setY(piece.getY() + yOffset);
+                        if (isValid(tempPiece)) {
+                            rotateCW(xOffset, yOffset); // TODO - done
                             lastResult = Result.SUCCESS;
                             placePos();
                             return Result.SUCCESS;
@@ -345,15 +342,14 @@ public final class TetrisBoard implements Board {
                 clearCurrentPos();
 
                 // check if simple rotate is valid
-                temp = (TetrisPiece)piece.nextRotation();
-                simpleRotateWorks = isValid(temp);
+                testCCW(); //TODO - done
+                simpleRotateWorks = isValid(tempPiece);
 
                 if (simpleRotateWorks) {
-                    piece = (TetrisPiece)piece.nextRotation();
+                    rotateCCW(); //TODO - done
                     lastResult = Result.SUCCESS;
                 } else { // need to check wall kicks..... :(
                     // FOUR TESTS TO CHECK, DEPENDS ON IDENTITY OF TETRONIMO, WHICH ORIENTATION IT'S IN AND GOING TO
-                    TetrisPiece kicked;
                     for (int test = 0; test < 4; test++ ) {
                         int xOffset, yOffset;
 
@@ -366,16 +362,11 @@ public final class TetrisBoard implements Board {
                             yOffset = CCW_WALL_KICK_DATA[test][piece.getRotationState()][1];
                         }
 
-                        kicked = (TetrisPiece)piece.nextRotation();
-
-                        kicked.setX(kicked.getX() + xOffset);
-                        kicked.setY(kicked.getY() + yOffset);
+                        testCCW(xOffset, yOffset); //TODO - done
 
                         // if we find a valid wall kick, take it, modify piece accordingly, and return SUCCESS
-                        if (isValid(kicked)) {
-                            piece = (TetrisPiece)piece.nextRotation();
-                            piece.setX(piece.getX() + xOffset);
-                            piece.setY(piece.getY() + yOffset);
+                        if (isValid(tempPiece)) {
+                            rotateCCW(xOffset, yOffset); //TODO - done
                             lastResult = Result.SUCCESS;
                             placePos();
                             return Result.SUCCESS;
@@ -406,7 +397,7 @@ public final class TetrisBoard implements Board {
      */
     private void clearCurrentPos() {
         for (Point offset : piece.getBody())
-            board[piece.getY() + (int)offset.getY()][piece.getX() + (int)offset.getX()] = false;
+            board[y + (int)offset.getY()][x + (int)offset.getX()] = false; //TODO - done
     }
 
     /**
@@ -414,7 +405,7 @@ public final class TetrisBoard implements Board {
      */
     private void placePos() {
         for (Point offset : piece.getBody())
-            board[piece.getY() + (int)offset.getY()][piece.getX() + (int)offset.getX()] = true;
+            board[y + (int)offset.getY()][x + (int)offset.getX()] = true; //TODO - done
     }
 
     /**
@@ -422,8 +413,8 @@ public final class TetrisBoard implements Board {
      * Compares the maxHeight of the piece with the current maxHeight
      */
     private void updateMaxHeight() {
-        if (piece.getY() + piece.getHeight() > maxHeight)
-            maxHeight = piece.getY() + piece.getHeight();
+        if (y + piece.getHeight() > maxHeight) //TODO - done
+            maxHeight = y + piece.getHeight();
     }
 
     /**
@@ -433,26 +424,106 @@ public final class TetrisBoard implements Board {
      */
     private void updateColHeights() {
         for (Point offset : piece.getBody()) {
-            int x = piece.getX() + (int)offset.getX();
-            int y = piece.getY() + (int)offset.getY() + 1;
-            if (colHeights[x] < y)
-                colHeights[x] = y;
+            int col = x + (int)offset.getX(); //TODO - done
+            int height = y + (int)offset.getY() + 1; //TODO - done
+            if (colHeights[col] < height)
+                colHeights[col] = height;
         }
+    }
+
+    /**
+     * This method changes tempX, tempY according to a CW rotation
+     * Also assigns the CW rotated piece to tempPiece
+     *
+     * Does not modify x, y, or piece
+     */
+    private void testCW(int xOffset, int yOffset) { // TODO - done
+        tempPiece = piece.nextRotation().nextRotation().nextRotation();
+        int anchorAdjustX, anchorAdjustY;
+        anchorAdjustX = (int)(piece.getAnchor().getX() - ((TetrisPiece)tempPiece).getAnchor().getX());
+        anchorAdjustY = (int)(piece.getAnchor().getY() - ((TetrisPiece)tempPiece).getAnchor().getY());
+
+        tempX = x + xOffset + anchorAdjustX;
+        tempY = y + yOffset + anchorAdjustY;
+    }
+
+    private void testCW() {
+        testCW(0, 0);
+    }
+
+    /**
+     * This method changes tempX, tempY according to a CCW rotation
+     * Also assigns the CCW rotated piece to tempPiece
+     *
+     * Does not modify x, y, or piece
+     */
+    private void testCCW(int xOffset, int yOffset) { // TODO - done
+        tempPiece = piece.nextRotation();
+        int anchorAdjustX, anchorAdjustY;
+        anchorAdjustX = (int)(piece.getAnchor().getX() - ((TetrisPiece)tempPiece).getAnchor().getX());
+        anchorAdjustY = (int)(piece.getAnchor().getY() - ((TetrisPiece)tempPiece).getAnchor().getY());
+
+        tempX = x + xOffset + anchorAdjustX;
+        tempY = y + yOffset + anchorAdjustY;
+    }
+
+    private void testCCW() {
+        testCCW(0 ,0);
+    }
+
+    /**
+     * This method updates x and y according to a CW rotation
+     * Also assigns the CW rotated piece to piece
+     */
+    private void rotateCW(int xOffset, int yOffset) { // TODO - done
+        tempPiece = piece.nextRotation().nextRotation().nextRotation();
+        int anchorAdjustX, anchorAdjustY;
+        anchorAdjustX = (int)(piece.getAnchor().getX() - ((TetrisPiece)tempPiece).getAnchor().getX());
+        anchorAdjustY = (int)(piece.getAnchor().getY() - ((TetrisPiece)tempPiece).getAnchor().getY());
+
+        x += xOffset + anchorAdjustX;
+        y += yOffset + anchorAdjustY;
+        piece = (TetrisPiece)tempPiece;
+    }
+
+    private void rotateCW() {
+        rotateCW(0, 0);
+    }
+
+    /**
+     * This method updates x and y according to a CCW rotation
+     * Also assigns the CCW rotated piece to piece
+     */
+    private void rotateCCW(int xOffset, int yOffset) { // TODO - done
+        tempPiece = piece.nextRotation();
+        int anchorAdjustX, anchorAdjustY;
+        anchorAdjustX = (int)(piece.getAnchor().getX() - ((TetrisPiece)tempPiece).getAnchor().getX());
+        anchorAdjustY = (int)(piece.getAnchor().getY() - ((TetrisPiece)tempPiece).getAnchor().getY());
+
+        x += xOffset + anchorAdjustX;
+        y += yOffset + anchorAdjustY;
+        piece = (TetrisPiece)tempPiece;
+    }
+
+    private void rotateCCW() {
+        rotateCCW(0, 0);
     }
 
     /**
      * Checks if the provided piece would fit on the board as is
      * -both in bounds and not on top of anything
+     *
+     * Will pass in tempPiece and use tempX, tempY as it coordinates
      */
-    private boolean isValid(TetrisPiece piece) {
+    private boolean isValid(Piece piece) {
         for (Point offset : piece.getBody()) {
-            if (piece.getX() + (int) offset.getX() < 0 || piece.getX() + (int) offset.getX() >= JTetris.WIDTH) {
+            if (tempX + (int) offset.getX() < 0 || tempX + (int) offset.getX() >= getWidth()) { //TODO - done
                 return false;
             }
-            if (piece.getY() + (int) offset.getY() < 0 || piece.getY() + (int) offset.getY() >= JTetris.HEIGHT) {
+            if (tempY + (int) offset.getY() < 0 || tempY + (int) offset.getY() >= getHeight()) { //TODO - done
                 return false;
             }
-            if /*occupied*/ (getGrid(piece.getX() + (int) offset.getX(), piece.getY() + (int) offset.getY())) {
+            if /*occupied*/ (getGrid(tempX + (int) offset.getX(), tempY + (int) offset.getY())) { //TODO - done
                 return false;
             }
         }
@@ -471,11 +542,9 @@ public final class TetrisBoard implements Board {
         for (int row = 0; row < JTetris.HEIGHT; row++ ) {
             if (isFull(row)) {
                 fullRowCount++;
-                continue;
             } else {
                 if (fullRowCount > 0) // not a shift by 0
-                    for (int col = 0; col < getWidth(); col ++)
-                        board[row - fullRowCount][col] = board[row][col];
+                    System.arraycopy(board[row], 0, board[row - fullRowCount], 0, getWidth());
             }
         }
 
@@ -523,7 +592,7 @@ public final class TetrisBoard implements Board {
 
     /**
      * This method clones the current TetrisBoard and return a copy that is completely separate
-     * -needs to copy board, piece, lastAction, lastResult, rowsCleared, maxHeight, colHeight
+     * -needs to copy board, piece, lastAction, lastResult, rowsCleared, maxHeight, colHeight, *x, y*X
      * -only board, piece, and colHeight are pointers
      */
     private TetrisBoard makeCopy() {
@@ -538,7 +607,9 @@ public final class TetrisBoard implements Board {
         for (int row = 0; row < getHeight(); row++ )
             for (int col = 0; col < getWidth(); col++ )
                 copy.setGrid(row, col, this.getGrid(col, row));
-        copy.nextPiece(piece.getCopy());
+        copy.nextPiece(this.piece);
+        copy.setX(this.x); // TODO - done
+        copy.setY((this.y));// TODO - done
 
         return copy;
     }
@@ -549,6 +620,8 @@ public final class TetrisBoard implements Board {
     @Override
     public void nextPiece(Piece p) {
         this.piece = (TetrisPiece)p;
+        x = getWidth() / 2; //TODO - done
+        y = getHeight() - 4; //TODO - done
     }
 
     /**
@@ -620,14 +693,14 @@ public final class TetrisBoard implements Board {
      */
     // TODO implement in constant time? This seems good enough though...?
     @Override
-    public int dropHeight(Piece piece, int x) {
+    public int dropHeight(Piece piece, int xVal) {
         int minDist = Integer.MAX_VALUE;
-        for (int col = x; col < x + piece.getWidth(); col++) {
-            int dist = ((TetrisPiece)piece).getY() + piece.getSkirt()[col - x] - getColumnHeight(col);
+        for (int col = xVal; col < xVal + piece.getWidth(); col++) {
+            int dist = y + piece.getSkirt()[col - xVal] - getColumnHeight(col); //TODO - done
             if (dist < minDist)
                 minDist = dist;
         }
-        return ((TetrisPiece)piece).getY() - minDist;
+        return y - minDist; //TODO - done
     }
 
     @Override
@@ -656,7 +729,14 @@ public final class TetrisBoard implements Board {
             return true;
         return board[y][x];
     }
-
     public void setGrid(int row, int col, boolean val) { board[row][col] = val; }
+
+    public void setX(int x) { this.x = x; }
+
+    public int getX() { return this.x; }
+
+    public void setY(int y) { this.y = y; }
+
+    public int getY() { return this.y; }
 
 }
