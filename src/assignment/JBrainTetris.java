@@ -35,6 +35,6 @@ public class JBrainTetris extends JTetris {
 
     public static void main(String[] args) {
         // Replace LameBrain with your own Brain implementation.
-        createGUI(new JBrainTetris(new LameBrain()));
+        createGUI(new JBrainTetris(new NotLameBrain()));
     }
 }

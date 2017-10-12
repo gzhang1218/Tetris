@@ -42,6 +42,8 @@ public class TacticalBrain implements Brain {
             }
         }
 
+        System.out.println("I chose the " + bestIndex + "th move out of " + options.size());
+
         // We want to return the first move on the way to the best Board
         return firstMoves.get(bestIndex);
     }

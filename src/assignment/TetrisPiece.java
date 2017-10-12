@@ -17,7 +17,7 @@ public final class TetrisPiece extends Piece {
     private char rotationState;
     private boolean isI;
 
-    // assuming that the JTetris pieceStrings will not change
+    // A S S U M I N G that the JTetris pieceStrings will not change
     static final String I = "0 0  1 0  2 0  3 0";
     static final String J = "0 1  1 1  2 1  2 0";
     static final String L = "0 0  0 1  1 1  2 1";
@@ -114,7 +114,7 @@ public final class TetrisPiece extends Piece {
                 break;
         }
 
-
+        // manually assign anchor points for squares and lines, these are tricky
         if (isSquare) {
             piece.setAnchor(new Point(1,1));
             one.setAnchor(new Point(1,1));
@@ -127,7 +127,7 @@ public final class TetrisPiece extends Piece {
             two.setAnchor(new Point(2,1));
             three.setAnchor(new Point(0,2));
 
-            // mark these as "I" pieces
+            // mark these as "I" pieces, for later - wall kick data
             piece.setI(true);
             one.setI(true);
             two.setI(true);
@@ -150,8 +150,8 @@ public final class TetrisPiece extends Piece {
      *
      * Calculate store body, height, width, calculate skirts
      *
-     * @param points
-     * @return
+     * @param points the points that comprise the body
+     * @return a TetrisPiece with instance variables all initialized
      */
     private static TetrisPiece generatePiece(Point[] points) {
 
@@ -236,7 +236,7 @@ public final class TetrisPiece extends Piece {
     public int[] getRSkirt() { return rSkirt; }
 
     /**
-     * Compares the Point[] bodies
+     * Compares the Point[] bodies to determine equality
      *
      * We cannot assume the Point[]
      * is in the same order

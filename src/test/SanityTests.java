@@ -23,7 +23,7 @@ import java.util.HashSet;
 public class SanityTests {
 
     /**
-     * A piece string representing the vertical stick.
+     * A piece string representing the horizontal stick.
      */
     public static final String stickPiece = "0 0  1 0  2 0  3 0";
 
@@ -133,14 +133,11 @@ public class SanityTests {
         assertEquals(Board.Action.COUNTERCLOCKWISE, board.getLastAction());
 
         // We should be able to drop the piece and place it.
-        assertEquals(Board.Result.SUCCESS, board.move(Board.Action.DROP)); //TODO changed result from place to succss
+        assertEquals(Board.Result.PLACE, board.move(Board.Action.DROP));
 
         // The last action/last result should change appropriately.
-        assertEquals(Board.Result.SUCCESS, board.getLastResult()); //TODO changed result from place to succss
+        assertEquals(Board.Result.PLACE, board.getLastResult());
         assertEquals(Board.Action.DROP, board.getLastAction());
-
-        // TODO I added this part
-        assertEquals(Board.Result.PLACE, board.move(Board.Action.DOWN));
 
         // We shouldn't have a piece anymore again.
         assertEquals(Board.Result.NO_PIECE, board.move(Board.Action.DOWN));
