@@ -55,29 +55,44 @@ public class TacticalBrain implements Brain {
 
         //TODO Check whether this is implemented correctly
         Board rotateBoard = currentBoard;
+        // We can always drop our current Piece
+        options.add(rotateBoard.testMove(Board.Action.DROP));
+        firstMoves.add(Board.Action.DROP);
+
         for (int i = 0; i < 4; i++) {
-            // We can always drop our current Piece
-            options.add(rotateBoard.testMove(Board.Action.DROP));
-            firstMoves.add(Board.Action.DROP);
+            if (i != 0) {
+                options.add(rotateBoard.testMove(Board.Action.DROP));
+                firstMoves.add(Board.Action.CLOCKWISE);
+            }
 
             // Now we'll add all the places to the left we can DROP
             Board left = rotateBoard.testMove(Board.Action.LEFT);
             while (left.getLastResult() == Board.Result.SUCCESS) {
-                options.add(left.testMove(Board.Action.DROP));
-                firstMoves.add(Board.Action.LEFT);
+                if (i != 0) {
+                    options.add(left.testMove(Board.Action.DROP));
+                    firstMoves.add(Board.Action.CLOCKWISE);
+                }
+                else {
+                    options.add(left.testMove(Board.Action.DROP));
+                    firstMoves.add(Board.Action.LEFT);
+                }
                 left.move(Board.Action.LEFT);
             }
 
             // And then the same thing to the right
             Board right = rotateBoard.testMove(Board.Action.RIGHT);
             while (right.getLastResult() == Board.Result.SUCCESS) {
-                options.add(right.testMove(Board.Action.DROP));
-                firstMoves.add(Board.Action.RIGHT);
+                if (i != 0) {
+                    options.add(right.testMove(Board.Action.DROP));
+                    firstMoves.add(Board.Action.CLOCKWISE);
+                }
+                else {
+                    options.add(right.testMove(Board.Action.DROP));
+                    firstMoves.add(Board.Action.RIGHT);
+                }
                 right.move(Board.Action.RIGHT);
             }
 
-            //is there a difference between CR and CCR? do we also need to
-            //rotate it in the CCR direction?
             rotateBoard.move(Board.Action.CLOCKWISE);
         }
         //TODO maybe instead of this, we test the left and right options with all possible rotation states
