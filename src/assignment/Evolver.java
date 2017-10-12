@@ -101,8 +101,8 @@ public class Evolver {
             }
 
             //DEBUG time taken
-            System.out.printf("Generation %d finished. Time: %f seconds\n", a + 1, (System.nanoTime() - startTime) /
-                    1000000000.0);
+            /*System.out.printf("Generation %d finished. Time: %f seconds\n", a + 1, (System.nanoTime() - startTime) /
+                    1000000000.0);*/
         }
         //DEBUG
         /*for (int i = 0; i < brains.length; i++) {
@@ -178,7 +178,7 @@ public class Evolver {
             score = score + board.getRowsCleared();
         }
 
-        System.out.println(score);
+        System.out.print(score);
         return score;
     }
 

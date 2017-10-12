@@ -113,7 +113,7 @@ public class TacticalBrain implements Brain {
                 fullRows++;
             }
         }
-        System.out.println(fullRows);
+        //System.out.println(fullRows);
 
         //TODO: implement hole function (empty space such
         //TODO: that there is at least one tile in column above it)
