@@ -29,6 +29,7 @@ public final class TetrisBoard implements Board {
     static final int[][][] CCW_I_WALL_KICK_DATA;
     static final int[][][] CW_I_WALL_KICK_DATA;
 
+    // adding SRS wallkick data
     static {
         CCW_WALL_KICK_DATA = new int[4]['R' + 1][2];
         CW_WALL_KICK_DATA = new int[4]['R' + 1][2];
@@ -193,22 +194,20 @@ public final class TetrisBoard implements Board {
     }
 
     /**
-     * This method needs to update the lastAction,
-     * lastResult, rowsCleared
-     *
-     * @param act
-     * @return
+     * This method handles each action and returns the following result
+     * It will update lastAction, lastResult, and rowsCleared before it returns
+
      */
     @Override
     public Result move(Action act) {
         lastAction = act;
 
+        rowsCleared = 0;
+
         if (piece == null) {
             lastResult = Result.NO_PIECE;
             return Result.NO_PIECE;
         }
-
-        rowsCleared = 0;
 
         switch (act) {
             case LEFT:
@@ -257,7 +256,7 @@ public final class TetrisBoard implements Board {
 
                     clearRows();
 
-                    piece = null;
+                    piece = null; // after a PLACE, piece should be null
 
                     lastResult = Result.PLACE;
                     return Result.PLACE;
@@ -270,7 +269,7 @@ public final class TetrisBoard implements Board {
 
                         clearRows();
 
-                        piece = null;
+                        piece = null; // after a PLACE, piece should be null
 
                         lastResult = Result.PLACE;
                         return Result.PLACE;
@@ -285,7 +284,7 @@ public final class TetrisBoard implements Board {
             case DROP:
                 // should always be able to drop, assuming the current piece is in a valid position
                 clearCurrentPos();
-                piece.setY(piece.getY() - dropHeight(piece, piece.getX()));
+                piece.setY(dropHeight(piece, piece.getX()));
                 placePos();
 
                 lastResult = Result.SUCCESS;
@@ -306,6 +305,8 @@ public final class TetrisBoard implements Board {
                     TetrisPiece kicked;
                     for (int test = 0; test < 4; test++ ) {
                         int xOffset, yOffset;
+
+                        // retrieve the correct data
                         if(piece.isI()) {
                             xOffset = CW_I_WALL_KICK_DATA[test][piece.getRotationState()][0];
                             yOffset = CW_I_WALL_KICK_DATA[test][piece.getRotationState()][1];
@@ -319,12 +320,14 @@ public final class TetrisBoard implements Board {
                         kicked.setX(kicked.getX() + xOffset);
                         kicked.setY(kicked.getY() + yOffset);
 
+                        // if we find a valid wall kick, take it, modify piece accordingly, and return SUCCESS
                         if (isValid(kicked)) {
                             piece = (TetrisPiece)piece.nextRotation().nextRotation().nextRotation();
-                            piece.setX(kicked.getX() + xOffset);
-                            piece.setY(kicked.getY() + yOffset);
+                            piece.setX(piece.getX() + xOffset);
+                            piece.setY(piece.getY() + yOffset);
                             lastResult = Result.SUCCESS;
-                            break;
+                            placePos();
+                            return Result.SUCCESS;
                         }
 
                     }
@@ -353,6 +356,8 @@ public final class TetrisBoard implements Board {
                     TetrisPiece kicked;
                     for (int test = 0; test < 4; test++ ) {
                         int xOffset, yOffset;
+
+                        // retrieve correct wall kick data
                         if(piece.isI()) {
                             xOffset = CCW_I_WALL_KICK_DATA[test][piece.getRotationState()][0];
                             yOffset = CCW_I_WALL_KICK_DATA[test][piece.getRotationState()][1];
@@ -366,12 +371,14 @@ public final class TetrisBoard implements Board {
                         kicked.setX(kicked.getX() + xOffset);
                         kicked.setY(kicked.getY() + yOffset);
 
+                        // if we find a valid wall kick, take it, modify piece accordingly, and return SUCCESS
                         if (isValid(kicked)) {
                             piece = (TetrisPiece)piece.nextRotation();
-                            piece.setX(kicked.getX() + xOffset);
-                            piece.setY(kicked.getY() + yOffset);
+                            piece.setX(piece.getX() + xOffset);
+                            piece.setY(piece.getY() + yOffset);
                             lastResult = Result.SUCCESS;
-                            break;
+                            placePos();
+                            return Result.SUCCESS;
                         }
                     }
                     // if we don't find a valid kick, then don't change 'piece' and have OUTOFBOUNDS return
@@ -394,21 +401,36 @@ public final class TetrisBoard implements Board {
         return Result.NO_PIECE;
     }
 
+    /**
+     * This method sets the coordinates occupied by the current piece to false
+     */
     private void clearCurrentPos() {
         for (Point offset : piece.getBody())
             board[piece.getY() + (int)offset.getY()][piece.getX() + (int)offset.getX()] = false;
     }
 
+    /**
+     * This method sets the coordinates occupied by the current piece to true
+     */
     private void placePos() {
         for (Point offset : piece.getBody())
             board[piece.getY() + (int)offset.getY()][piece.getX() + (int)offset.getX()] = true;
     }
 
+    /**
+     * This method updates maxHeight whenever a piece is placed
+     * Compares the maxHeight of the piece with the current maxHeight
+     */
     private void updateMaxHeight() {
         if (piece.getY() + piece.getHeight() > maxHeight)
             maxHeight = piece.getY() + piece.getHeight();
     }
 
+    /**
+     * This method updates the colHeights for each column
+     * The colHeight for a given column is simply the
+     * index (1 - based) of the higheset occupied block in that column
+     */
     private void updateColHeights() {
         for (Point offset : piece.getBody()) {
             int x = piece.getX() + (int)offset.getX();
@@ -421,9 +443,6 @@ public final class TetrisBoard implements Board {
     /**
      * Checks if the provided piece would fit on the board as is
      * -both in bounds and not on top of anything
-     *
-     * @param piece
-     * @return
      */
     private boolean isValid(TetrisPiece piece) {
         for (Point offset : piece.getBody()) {
@@ -466,12 +485,15 @@ public final class TetrisBoard implements Board {
 
         rowsCleared = fullRowCount;
 
+        // adjusting maxHeight, colHeights
         maxHeight -= fullRowCount;
-        for (int col = 0 ; col < JTetris.WIDTH; col ++ )
-            colHeights[col] = colHeights[col] - fullRowCount;
-
+        for (int col = 0; col < JTetris.WIDTH; col ++ )
+            colHeights[col] = colHeights[col] - fullRowCount >= 0 ? colHeights[col] - fullRowCount : 0; // making sure colHeights stay at 0 or above
     }
 
+    /**
+     * This method returns true if the entire row is populated by blocks
+     */
     private boolean isFull(int row) {
         for (int col = 0; col < JTetris.WIDTH; col++) {
             if (!getGrid(col, row))
@@ -480,7 +502,9 @@ public final class TetrisBoard implements Board {
         return true;
     }
 
-    // TODO need to figure out a way of simulating moves without actually changing anything
+    /**
+     * This method should return a
+     */
     @Override
     public Board testMove(Action act) {
         /*Board savedBoard = new TetrisBoard(this.getHeight(),this.getWidth());
@@ -498,8 +522,9 @@ public final class TetrisBoard implements Board {
     }
 
     /**
-     * Needs to copy board, piece, lastAction, lastResult, rowsCleared, maxHeight, colHeight
-     * only board, piece, and colHeight are pointers
+     * This method clones the current TetrisBoard and return a copy that is completely separate
+     * -needs to copy board, piece, lastAction, lastResult, rowsCleared, maxHeight, colHeight
+     * -only board, piece, and colHeight are pointers
      */
     private TetrisBoard makeCopy() {
         TetrisBoard copy = new TetrisBoard(getWidth(), getHeight()); //initializes the board[][] and colHeights[]
@@ -513,17 +538,24 @@ public final class TetrisBoard implements Board {
         for (int row = 0; row < getHeight(); row++ )
             for (int col = 0; col < getWidth(); col++ )
                 copy.setGrid(row, col, this.getGrid(col, row));
-        copy.nextPiece(this.piece);
+        copy.nextPiece(piece.getCopy());
 
         return copy;
     }
 
+    /**
+     * This method reassigns the current piece to the provided piece
+     */
     @Override
     public void nextPiece(Piece p) {
         this.piece = (TetrisPiece)p;
     }
 
-    // need to compare the 2-d arrays
+    /**
+     * This method compares two TetrisBoards
+     *
+     * Currently only checks if the contents of the boards are the same
+     */
     // TODO should we compare active pieces too? and previous actions, results, rows cleared?
     @Override
     public boolean equals(Object other) {
@@ -582,6 +614,10 @@ public final class TetrisBoard implements Board {
         this.maxHeight = maxHeight;
     }
 
+    /**
+     * This method returns the y-height the piece would end up
+     * if it were to be dropped
+     */
     // TODO implement in constant time? This seems good enough though...?
     @Override
     public int dropHeight(Piece piece, int x) {
@@ -591,7 +627,7 @@ public final class TetrisBoard implements Board {
             if (dist < minDist)
                 minDist = dist;
         }
-        return minDist;
+        return ((TetrisPiece)piece).getY() - minDist;
     }
 
     @Override
@@ -601,6 +637,9 @@ public final class TetrisBoard implements Board {
 
     public void setColumnHeight(int col, int val) { this.colHeights[col] = val; }
 
+    /**
+     * This method counts and returns the number of filled blocks in a row
+     */
     // TODO implement in constant time
     @Override
     public int getRowWidth(int y) {

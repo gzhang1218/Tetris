@@ -102,7 +102,7 @@ public class SanityTests {
 
         // We should be able to gauge the drop height of a piece on an empty board.
         Piece piece = TetrisPiece.getPiece(stickPiece);
-        assertEquals(JTetris.HEIGHT, board.dropHeight(piece, JTetris.WIDTH / 2)); // TODO what is this??
+        assertEquals(0, board.dropHeight(piece, JTetris.WIDTH / 2));
 
         // We should be able to give the board a piece.
         board.nextPiece(piece);

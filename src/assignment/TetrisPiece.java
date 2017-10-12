@@ -337,4 +337,26 @@ public final class TetrisPiece extends Piece {
             result += point.getX() + " " + point.getY() + "  ";
         return result;
     }
+
+    public TetrisPiece getCopy() {
+        TetrisPiece piece = new TetrisPiece();
+
+        // copying over all instance variables
+        piece.setX(getX());
+        piece.setY(getY());
+        piece.setHeight(getHeight());
+        piece.setWidth(getWidth());
+        piece.setBody(getBody());
+        piece.setAnchor(getAnchor());
+        piece.setSkirt(getSkirt());
+        piece.setLSkirt(getLSkirt());
+        piece.setRSkirt(getRSkirt());
+        piece.setRotationState(getRotationState());
+        piece.setI(isI());
+
+        // assigning next to point to same next
+        piece.setNext(this.next); // this will break if the copied piece is rotated around a full circle
+
+        return piece;
+    }
 }

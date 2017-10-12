@@ -86,11 +86,41 @@ public class NotLameBrain implements Brain {
     }
 
     /**
-     * Penalize: height, holes
-     * Reward: clearRows, edges that touch blocks, walls, floor
+     * Penalize: height, holes, blockades
+     * Reward: clearRows
      */
     private int scoreBoard(Board newBoard) {
-        return 100 - (newBoard.getMaxHeight() * 5);
+
+        // get the summed height - each block has value of its height
+        int heightSum = 0;
+        for (int row = 0; row < newBoard.getHeight(); row++)
+            heightSum += (row + 1) * newBoard.getRowWidth(row);
+
+        // count holes and blockadaes
+        int holes = 0, blockades = 0;
+        for (int col = 0; col < newBoard.getWidth(); col++) {
+            int holesInCol = 0;
+            for (int row = 0; row < newBoard.getColumnHeight(col); row++) {
+                if (!newBoard.getGrid(col, row)) // if empty
+                    holesInCol++;
+                if (holesInCol != 0 && newBoard.getGrid(col, row)) // a hole has been found
+                    blockades++;
+            }
+            holes += holesInCol;
+        }
+
+        // get rows cleared
+        int rowsCleared = newBoard.getRowsCleared();
+
+        final double HEIGHT_MULT = -3.71;
+        final double HOLE_MULT = -4.79;
+        final double BLOCKADE_MULT = 1.4;
+        final double ROW_CLEAR_MULT = -1.87;
+
+        int result = (int)(HEIGHT_MULT * heightSum + HOLE_MULT * holes
+                + BLOCKADE_MULT * blockades + ROW_CLEAR_MULT * rowsCleared);
+
+        return result;
     }
 
 }
