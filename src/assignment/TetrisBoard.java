@@ -288,7 +288,7 @@ public final class TetrisBoard implements Board {
                 piece.setY(piece.getY() - dropHeight(piece, piece.getX()));
                 placePos();
 
-                lastResult = Result.SUCCESS; //TODO SanityTest wants this to be PLACE
+                lastResult = Result.SUCCESS;
                 return Result.SUCCESS;
             case CLOCKWISE:
 
@@ -388,7 +388,8 @@ public final class TetrisBoard implements Board {
                 return Result.SUCCESS;
             case HOLD:
                 // TODO implement for karma
-                break;
+                lastResult = Result.SUCCESS;
+                return Result.SUCCESS;
         }
 
 
