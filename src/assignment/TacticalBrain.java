@@ -68,7 +68,7 @@ public class TacticalBrain implements Brain {
      * Since this is just a Lame Brain, we aren't going to do smart
      * things like rotating pieces.
      */
-    private void enumerateOptions(Board currentBoard) {
+    void enumerateOptions(Board currentBoard) {
         // Check out rotations in place
         Board center = currentBoard.testMove(Board.Action.NOTHING); // just copy the board
         options.add(center.testMove(Board.Action.DROP));
@@ -115,7 +115,7 @@ public class TacticalBrain implements Brain {
         }
     }
 
-    private double scoreBoard(Board newBoard) {
+    double scoreBoard(Board newBoard) {
         //TODO add more variables??? Ex: edges touching another block, edges touching wall, edges touching floor
         //sum of all column heights, want to minimize this
         int totalHeight = 0;

@@ -16,7 +16,48 @@ public class TetrisBoardTest {
 
     @Test
     public void testMove() throws Exception {
+        int myWidth = JTetris.WIDTH * 2, myHeight = JTetris.HEIGHT * 3;
 
+        // create a board of arbitrary dimensions
+        Board board = new TetrisBoard(myWidth, myHeight);
+
+        // check the dimension getters
+        assertEquals(myWidth, board.getWidth());
+        assertEquals(myHeight, board.getHeight());
+
+        // try to move without a piece, should have NO_PIECE return
+        assertEquals(Board.Result.NO_PIECE, board.move(Board.Action.DOWN));
+
+        // even though NO_PIECE, the lastAction and lastResult should match up
+        assertEquals(Board.Action.DOWN, board.getLastAction());
+        assertEquals(Board.Result.NO_PIECE, board.getLastResult());
+
+        // give a piece
+        board.nextPiece(TetrisPiece.getPiece(stickPiece));
+
+        //  test each of the actions
+        assertEquals(Board.Result.SUCCESS, board.move(Board.Action.LEFT));
+        assertEquals(Board.Result.SUCCESS, board.move(Board.Action.RIGHT));
+        assertEquals(Board.Result.SUCCESS, board.move(Board.Action.DOWN));
+        assertEquals(Board.Result.SUCCESS, board.move(Board.Action.CLOCKWISE));
+        assertEquals(Board.Result.SUCCESS, board.move(Board.Action.COUNTERCLOCKWISE));
+        assertEquals(Board.Result.SUCCESS, board.move(Board.Action.NOTHING));
+        assertEquals(Board.Result.SUCCESS, board.move(Board.Action.HOLD));
+
+        // DROP should return PLACE
+        assertEquals(Board.Result.PLACE, board.move(Board.Action.DROP));
+
+        // there should be NO_PIECE after a PLACE
+        assertEquals(Board.Result.NO_PIECE, board.move(Board.Action.DOWN));
+
+        // did the piece actually fall down
+        assertEquals(4, board.getRowWidth(0));
+        for (int col = 0; col < board.getWidth(); col++) {
+            if (col >= board.getWidth() / 2 && col < board.getWidth() / 2 + 4)
+                assertEquals(1, board.getColumnHeight(col));
+            else
+                assertEquals(0, board.getColumnHeight(col));
+        }
     }
 
     @Test
@@ -41,10 +82,6 @@ public class TetrisBoardTest {
         // DROP the original
         board.move(Board.Action.DROP);
         assertNotEquals(board, board3);
-    }
-
-    @Test
-    public void testNextPiece() throws Exception {
     }
 
     @Test
@@ -101,6 +138,39 @@ public class TetrisBoardTest {
 
     @Test
     public void testDropHeight() throws Exception {
+        Board board = new TetrisBoard(JTetris.WIDTH, JTetris.HEIGHT + JTetris.TOP_SPACE);
+
+        // check that a piece will fall to the ground y = 0
+        assertEquals(0, board.dropHeight(TetrisPiece.getPiece(stickPiece), board.getWidth() / 2));
+
+        // place a horizontal stick piece in the way
+        board.nextPiece(TetrisPiece.getPiece(stickPiece));
+        board.move(Board.Action.DROP);
+
+        // check that a horizontal stick piece will fall to the ground y = 0
+        assertEquals(1, board.dropHeight(TetrisPiece.getPiece(stickPiece), board.getWidth() / 2));
+
+        // check that a RD piece will be able to fall to the ground
+        assertEquals(0, board.dropHeight(TetrisPiece.getPiece(rdPiece), board.getWidth() / 2 - 2));
+
+        // stack another horizontal stick piece
+        board.nextPiece(TetrisPiece.getPiece(stickPiece));
+        board.move(Board.Action.DROP);
+
+        // check that an inverted J piece will be able to fall to the ground
+        assertEquals(0, board.dropHeight(
+                TetrisPiece.getPiece(jPiece).nextRotation(),
+                board.getWidth() / 2 - 1));
+
+        // stack yet another horizontal stick piece
+        board.nextPiece(TetrisPiece.getPiece(stickPiece));
+        board.move(Board.Action.DROP);
+
+        // check that an inverted J piece will not be able to fall to the ground (stack of sticks is now 3 high)
+        assertEquals(1, board.dropHeight(
+                TetrisPiece.getPiece(jPiece).nextRotation(),
+                board.getWidth() / 2 - 1));
+
     }
 
     @Test
