@@ -430,7 +430,7 @@ public final class TetrisBoard implements Board {
     /**
      * This method updates the colHeights for each column
      * The colHeight for a given column is simply the
-     * index (1 - based) of the higheset occupied block in that column
+     * index (1 - based) of the highest occupied block in that column
      */
     private void updateColHeights() {
         for (Point offset : piece.getBody()) {

@@ -19,7 +19,7 @@ public class NotLameBrain implements Brain {
         firstMoves = new ArrayList<>();
         enumerateOptions(currentBoard);
 
-        int best = 0;
+        int best = Integer.MIN_VALUE;
         int bestIndex = 0;
 
         // Check all of the options and get the one with the highest score
@@ -88,51 +88,51 @@ public class NotLameBrain implements Brain {
             right.move(Board.Action.RIGHT);
         }
     }
-//
-//    /**
-//     * Penalize: height, holes, blockades
-//     * Reward: clearRows
-//     */
-//    private int scoreBoard(Board newBoard) {
-//
-//        // get the summed height - each block has value of its height
-//        int heightSum = 0;
-//        for (int row = 0; row < newBoard.getHeight(); row++)
-//            heightSum += (row + 1) * newBoard.getRowWidth(row);
-//
-//        // count holes and blockadaes
-//        int holes = 0, blockades = 0;
-//        for (int col = 0; col < newBoard.getWidth(); col++) {
-//            int holesInCol = 0;
-//            for (int row = 0; row < newBoard.getColumnHeight(col); row++) {
-//                if (!newBoard.getGrid(col, row)) // if empty
-//                    holesInCol++;
-//                if (holesInCol != 0 && newBoard.getGrid(col, row)) // a hole has been found
-//                    blockades++;
-//            }
-//            holes += holesInCol;
-//        }
-//
-//        // get rows cleared
-//        int rowsCleared = newBoard.getRowsCleared();
-//
-//        final double HEIGHT_MULT = -3.71;
-//        final double HOLE_MULT = -4.79;
-//        final double BLOCKADE_MULT = -1.4;
-//        final double ROW_CLEAR_MULT = 2.5;
-//
-//        int result = (int)(HEIGHT_MULT * heightSum + HOLE_MULT * holes
-//                + BLOCKADE_MULT * blockades + ROW_CLEAR_MULT * rowsCleared);
-//
-//        return result;
-//    }
+
+    /**
+     * Penalize: height, holes, blockades
+     * Reward: clearRows
+     */
+    private int scoreBoard(Board newBoard) {
+
+        // get the summed height - each block has value of its height
+        int heightSum = 0;
+        for (int row = 0; row < newBoard.getHeight(); row++)
+            heightSum += (row + 1) * newBoard.getRowWidth(row);
+
+        // count holes and blockadaes
+        int holes = 0, blockades = 0;
+        for (int col = 0; col < newBoard.getWidth(); col++) {
+            int holesInCol = 0;
+            for (int row = 0; row < newBoard.getColumnHeight(col); row++) {
+                if (!newBoard.getGrid(col, row)) // if empty
+                    holesInCol++;
+                if (holesInCol != 0 && newBoard.getGrid(col, row)) // a hole has been found
+                    blockades++;
+            }
+            holes += holesInCol;
+        }
+
+        // get rows cleared
+        int rowsCleared = newBoard.getRowsCleared();
+
+        final double HEIGHT_MULT = -3.71;
+        final double HOLE_MULT = -4.79;
+        final double BLOCKADE_MULT = -1.4;
+        final double ROW_CLEAR_MULT = 2.5;
+
+        int result = (int)(HEIGHT_MULT * heightSum + HOLE_MULT * holes
+                + BLOCKADE_MULT * blockades + ROW_CLEAR_MULT * rowsCleared);
+
+        return result;
+    }
     /**
      * Since we're trying to avoid building too high,
      * we're going to give higher scores to Boards with
      * MaxHeights close to 0.
      */
-    private int scoreBoard(Board newBoard) {
+/*    private int scoreBoard(Board newBoard) {
         return 100 - (newBoard.getMaxHeight() * 5);
-    }
+    }*/
 
 }

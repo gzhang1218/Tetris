@@ -6,7 +6,7 @@ import java.io.*;
 public class Evolver {
 
     private Board board;
-    private int population = 1000;
+    private int population = 50;
     private TacticalBrainFitness[] brains = new TacticalBrainFitness[population];
     //private TacticalBrain[] testBrains = new TacticalBrain[population];
 
@@ -24,9 +24,12 @@ public class Evolver {
     private int maxChildren = (int)(population*childPercentage);
     private TacticalBrain[] children = new TacticalBrain[maxChildren];
 
-    private int generations = 100;
-    private int trials = 100;
-    private int pieceLimit = 750;
+    private int generations = 50;
+    private int trials = 15;
+    private int scoreLimit = 200;
+    private int pieceLimit = 500;
+    private int mutationChance = 20;
+    private double mutationRange = 0.35; //mutations can mutate one weight up to +- mutationRange;
 
     private Random rand = new Random();
 
@@ -37,7 +40,6 @@ public class Evolver {
             brains[i] = new TacticalBrainFitness();
             brains[i].brain = new TacticalBrain();
         }
-        readWeights();
     }
 
     public static void main(String[] args) throws IOException {
@@ -45,9 +47,8 @@ public class Evolver {
         evolver.evolve();
     }
 
-    public void readWeights() {
-    }
 
+    //TODO SHORTEN RUNTIME (maybe sort)
     public void evolve() {
 
         for (int a = 0; a < generations; a++) {
@@ -62,6 +63,8 @@ public class Evolver {
                 for (int j = 0; j < trials; j++) {
                     brains[i].fitness = brains[i].fitness + gameSimulator(brains[i].brain);
                 }
+                int averageScore = (brains[i].fitness)/trials;
+                //System.out.println(averageScore);
             }
 
             Arrays.sort(brains);
@@ -95,14 +98,14 @@ public class Evolver {
                 children[j] = reproduce();
             }
 
-            //culling the 30 worst and replacing them with children
-            for (int i = 0; i < 30; i++) {
+            //culling the worst (# = maxChildren) and replacing them with children
+            for (int i = 0; i < maxChildren; i++) {
                 brains[i].brain = children[i];
             }
 
             //DEBUG time taken
-            /*System.out.printf("Generation %d finished. Time: %f seconds\n", a + 1, (System.nanoTime() - startTime) /
-                    1000000000.0);*/
+            System.out.printf("Generation %d finished. Time: %f seconds\n", a + 1, (System.nanoTime() - startTime) /
+                    1000000000.0);
         }
         //DEBUG
         /*for (int i = 0; i < brains.length; i++) {
@@ -116,8 +119,8 @@ public class Evolver {
         Arrays.sort(brains);
 
         //final weights
-        for (int i = 0; i < 4; i++) {
-            System.out.println(brains[brains.length-1].brain.getWeights()[i]);
+        for (int i = 0; i < brains[brains.length-1].brain.getWeights().length; i++) {
+            System.out.print(brains[brains.length-1].brain.getWeights()[i]+", ");
         }
     }
 
@@ -142,22 +145,23 @@ public class Evolver {
 
 
     public double[] mutate(double[] weights) {
-        if (rand.nextInt(100) < 15) {
+        if (rand.nextInt(100) < mutationChance) {
             int weightIndex = rand.nextInt(weights.length);
-            weights[weightIndex] = weights[weightIndex] + (rand.nextDouble() * 0.5 - 0.25);
+            weights[weightIndex] = weights[weightIndex] + (rand.nextDouble() * (mutationRange*2) - mutationRange);
         }
         return weights;
     }
 
     public int gameSimulator(Brain simBrain) {
         int score = 0;
+        int pieces = 0;
 
         boolean gameOn;
         Board.Action act;
         board = new TetrisBoard(JTetris.WIDTH, JTetris.HEIGHT+JTetris.TOP_SPACE);
         gameOn = true;
 
-        while (score < 750 && gameOn) {
+        while (score < scoreLimit && gameOn && pieces < pieceLimit) {
             act = simBrain.nextMove(board);
             Board.Result result = board.move(act);
             switch (result) {
@@ -172,13 +176,13 @@ public class Evolver {
                 case NO_PIECE:
                     if (gameOn) {
                         board.nextPiece(pickNextPiece());
+                        pieces++;
                     }
                     break;
             }
             score = score + board.getRowsCleared();
         }
-
-        System.out.print(score);
+        //System.out.println(score);
         return score;
     }
 
