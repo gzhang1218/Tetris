@@ -580,6 +580,7 @@ public final class TetrisBoard implements Board {
 
         // adjusting maxHeight, colHeights
         maxHeight -= fullRowCount;
+        if (maxHeight < 0) maxHeight = 0;
         for (int col = 0; col < getWidth(); col ++ ) {
             for (int row = getHeight() - 1; row >= 0; row-- ) {
                 if (board[row][col] ) {
