@@ -81,10 +81,10 @@ public class TacticalBrain implements Brain {
         Board right = zero.testMove(Board.Action.CLOCKWISE);
 
         // get plain drops, only if the original rotation was successful
-        if (zero.getLastResult() == Board.Result.SUCCESS) {
-            options.add(zero.testMove(Board.Action.DROP));
-            firstMoves.add(Board.Action.DROP);
-        }
+        // always add a DROP - if NO_PIECE will at least have a single entry in nextMove
+        options.add(zero.testMove(Board.Action.DROP));
+        firstMoves.add(Board.Action.DROP);
+
         if (left.getLastResult() == Board.Result.SUCCESS) {
             options.add(left.testMove(Board.Action.DROP));
             firstMoves.add(Board.Action.COUNTERCLOCKWISE);
