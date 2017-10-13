@@ -80,82 +80,106 @@ public class TacticalBrain implements Brain {
         Board two = left.testMove(Board.Action.COUNTERCLOCKWISE);
         Board right = two.testMove(Board.Action.COUNTERCLOCKWISE);
 
-        // get plain drops
-        options.add(zero.testMove(Board.Action.DROP));
-        firstMoves.add(Board.Action.DROP);
-        options.add(left.testMove(Board.Action.DROP));
-        firstMoves.add(Board.Action.COUNTERCLOCKWISE);
-        options.add(zero.testMove(Board.Action.DROP));
-        firstMoves.add(Board.Action.COUNTERCLOCKWISE);
-        options.add(zero.testMove(Board.Action.DROP));
-        firstMoves.add(Board.Action.CLOCKWISE);
+        // get plain drops, only if the original rotation was successful
+        if (zero.getLastResult() == Board.Result.SUCCESS) {
+            options.add(zero.testMove(Board.Action.DROP));
+            firstMoves.add(Board.Action.DROP);
+        }
+        if (left.getLastResult() == Board.Result.SUCCESS) {
+            options.add(left.testMove(Board.Action.DROP));
+            firstMoves.add(Board.Action.COUNTERCLOCKWISE);
+        }
+        if (two.getLastResult() == Board.Result.SUCCESS) {
+            options.add(two.testMove(Board.Action.DROP));
+            firstMoves.add(Board.Action.COUNTERCLOCKWISE);
+        }
+        if (right.getLastResult() == Board.Result.SUCCESS) {
+            options.add(right.testMove(Board.Action.DROP));
+            firstMoves.add(Board.Action.CLOCKWISE);
+        }
 
         // CHECKING LEFT TRANSLATIONS
 
-        // go through left translations of the spawn state
-        Board left0 = zero.testMove(Board.Action.LEFT);
-        while (left0.getLastResult() == Board.Result.SUCCESS) {
-            options.add(left0.testMove(Board.Action.DROP));
-            firstMoves.add(Board.Action.LEFT);
-            left0.move(Board.Action.LEFT);
+        // go through left translations of the spawn state, only if the original rotation was successful
+        if (zero.getLastResult() == Board.Result.SUCCESS) {
+            Board left0 = zero.testMove(Board.Action.LEFT);
+            while (left0.getLastResult() == Board.Result.SUCCESS) {
+                options.add(left0.testMove(Board.Action.DROP));
+                firstMoves.add(Board.Action.LEFT);
+                left0.move(Board.Action.LEFT);
+            }
         }
 
-        // go through left translations of the left state
-        Board leftL = left.testMove(Board.Action.LEFT);
-        while (leftL.getLastResult() == Board.Result.SUCCESS) {
-            options.add(leftL.testMove(Board.Action.DROP));
-            firstMoves.add(Board.Action.COUNTERCLOCKWISE);
-            leftL.move(Board.Action.LEFT);
+        // go through left translations of the left state, only if the original rotation was successful
+        if (left.getLastResult() == Board.Result.SUCCESS) {
+            Board leftL = left.testMove(Board.Action.LEFT);
+            while (leftL.getLastResult() == Board.Result.SUCCESS) {
+                options.add(leftL.testMove(Board.Action.DROP));
+                firstMoves.add(Board.Action.COUNTERCLOCKWISE);
+                leftL.move(Board.Action.LEFT);
+            }
         }
 
-        // go through left translations of the 180 state
-        Board left2 = two.testMove(Board.Action.LEFT);
-        while (left2.getLastResult() == Board.Result.SUCCESS) {
-            options.add(left2.testMove(Board.Action.DROP));
-            firstMoves.add(Board.Action.COUNTERCLOCKWISE);
-            left2.move(Board.Action.LEFT);
+        // go through left translations of the 180 state, only if the original rotation was successful
+        if (two.getLastResult() == Board.Result.SUCCESS) {
+            Board left2 = two.testMove(Board.Action.LEFT);
+            while (left2.getLastResult() == Board.Result.SUCCESS) {
+                options.add(left2.testMove(Board.Action.DROP));
+                firstMoves.add(Board.Action.COUNTERCLOCKWISE);
+                left2.move(Board.Action.LEFT);
+            }
         }
 
-        // go through left translations of the right state
-        Board leftR = right.testMove(Board.Action.LEFT);
-        while (leftR.getLastResult() == Board.Result.SUCCESS) {
-            options.add(leftR.testMove(Board.Action.DROP));
-            firstMoves.add(Board.Action.CLOCKWISE);
-            leftR.move(Board.Action.LEFT);
+        // go through left translations of the right state, only if the original rotation was successful
+        if (right.getLastResult() == Board.Result.SUCCESS) {
+            Board leftR = right.testMove(Board.Action.LEFT);
+            while (leftR.getLastResult() == Board.Result.SUCCESS) {
+                options.add(leftR.testMove(Board.Action.DROP));
+                firstMoves.add(Board.Action.CLOCKWISE);
+                leftR.move(Board.Action.LEFT);
+            }
         }
 
         // CHECKING RIGHT TRANSLATIONS
 
-        // go through right translations of the spawn state
-        Board right0 = zero.testMove(Board.Action.RIGHT);
-        while (right0.getLastResult() == Board.Result.SUCCESS) {
-            options.add(right0.testMove(Board.Action.DROP));
-            firstMoves.add(Board.Action.RIGHT);
-            right0.move(Board.Action.RIGHT);
+        // go through right translations of the spawn state, only if the original rotation was successful
+        if (zero.getLastResult() == Board.Result.SUCCESS) {
+            Board right0 = zero.testMove(Board.Action.RIGHT);
+            while (right0.getLastResult() == Board.Result.SUCCESS) {
+                options.add(right0.testMove(Board.Action.DROP));
+                firstMoves.add(Board.Action.RIGHT);
+                right0.move(Board.Action.RIGHT);
+            }
         }
 
-        // go through right translations of the left state
-        Board rightL = left.testMove(Board.Action.RIGHT);
-        while (rightL.getLastResult() == Board.Result.SUCCESS) {
-            options.add(rightL.testMove(Board.Action.DROP));
-            firstMoves.add(Board.Action.COUNTERCLOCKWISE);
-            rightL.move(Board.Action.RIGHT);
+        // go through right translations of the left state, only if the original rotation was successful
+        if (left.getLastResult() == Board.Result.SUCCESS) {
+            Board rightL = left.testMove(Board.Action.RIGHT);
+            while (rightL.getLastResult() == Board.Result.SUCCESS) {
+                options.add(rightL.testMove(Board.Action.DROP));
+                firstMoves.add(Board.Action.COUNTERCLOCKWISE);
+                rightL.move(Board.Action.RIGHT);
+            }
         }
 
-        // go through right translations of the 180 state
-        Board right2 = two.testMove(Board.Action.RIGHT);
-        while (right2.getLastResult() == Board.Result.SUCCESS) {
-            options.add(right2.testMove(Board.Action.DROP));
-            firstMoves.add(Board.Action.COUNTERCLOCKWISE);
-            right2.move(Board.Action.RIGHT);
+        // go through right translations of the 180 state, only if the original rotation was successful
+        if (two.getLastResult() == Board.Result.SUCCESS) {
+            Board right2 = two.testMove(Board.Action.RIGHT);
+            while (right2.getLastResult() == Board.Result.SUCCESS) {
+                options.add(right2.testMove(Board.Action.DROP));
+                firstMoves.add(Board.Action.COUNTERCLOCKWISE);
+                right2.move(Board.Action.RIGHT);
+            }
         }
 
-        // go through right translations of the right state
-        Board rightR = right.testMove(Board.Action.RIGHT);
-        while (rightR.getLastResult() == Board.Result.SUCCESS) {
-            options.add(rightR.testMove(Board.Action.DROP));
-            firstMoves.add(Board.Action.CLOCKWISE);
-            rightR.move(Board.Action.RIGHT);
+        // go through right translations of the right state, only if the original rotation was successful
+        if (right.getLastResult() == Board.Result.SUCCESS) {
+            Board rightR = right.testMove(Board.Action.RIGHT);
+            while (rightR.getLastResult() == Board.Result.SUCCESS) {
+                options.add(rightR.testMove(Board.Action.DROP));
+                firstMoves.add(Board.Action.CLOCKWISE);
+                rightR.move(Board.Action.RIGHT);
+            }
         }
 
     }
