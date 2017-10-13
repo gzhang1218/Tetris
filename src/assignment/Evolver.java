@@ -41,7 +41,8 @@ public class Evolver {
             brains[i].brain = new TacticalBrain();
             brains[i].brain.genRandomWeights();
         }
-        System.out.println("("+population+", "+generations+", "+trials+", "+mutationChance+", "+mutationRange+")");
+        boolean randomOn = true;
+        System.out.println("("+population+", "+generations+", "+trials+", "+mutationChance+", "+mutationRange+", "+randomOn+")");
     }
 
     public static void main(String[] args) {
@@ -121,6 +122,7 @@ public class Evolver {
         }*/
         Arrays.sort(brains);
 
+        System.out.print("Optimal weights are: ");
         //final weights
         for (int i = 0; i < brains[brains.length-1].brain.getWeights().length; i++) {
             System.out.print(brains[brains.length-1].brain.getWeights()[i]+", ");
