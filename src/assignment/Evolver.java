@@ -7,27 +7,33 @@ public class Evolver {
 
     private Board board;
     private int population = 100;
-    private TacticalBrainFitness[] brains = new TacticalBrainFitness[population];
-    //private TacticalBrain[] testBrains = new TacticalBrain[population];
 
-    //private int[] fitnesses = new int[population];
+    //store brains and fitness scores in same object within an array
+    private TacticalBrainFitness[] brains = new TacticalBrainFitness[population];
 
     //choose 10% of population for bestBrains
     private double samplePercentage = 0.1;
     private int sample = (int)(population*samplePercentage);
     private TacticalBrain[] randomBrains = new TacticalBrain[sample];
     private int[] scores = new int[sample];
+
+    //find index of the two highest scorers in a sample
     private int highScoreIndex1;
     private int highScoreIndex2;
 
+    //percentage of total population which will be replaced by children
     private double childPercentage = 0.3;
     private int maxChildren = (int)(population*childPercentage);
     private TacticalBrain[] children = new TacticalBrain[maxChildren];
 
     private int generations = 25;
     private int trials = 15;
+
+    //score and piece limits for the simulations, can't let it run too long
     private int scoreLimit = 1000;
     private int pieceLimit = 2000;
+
+    //mutation parameters
     private int mutationChance = 10;
     private double mutationRange = 0.2; //mutations can mutate one weight up to +- mutationRange;
 
@@ -39,50 +45,50 @@ public class Evolver {
         for(int i = 0; i < population; i++) {
             brains[i] = new TacticalBrainFitness();
             brains[i].brain = new TacticalBrain();
+            //generate random weights for each brain
             brains[i].brain.genRandomWeights();
         }
+        //displays Evolver parameter info
         boolean randomOn = true;
         System.out.println("("+population+", "+generations+", "+trials+", "+mutationChance+", "+mutationRange+", "+randomOn+")");
     }
 
     public static void main(String[] args) {
-
         Evolver evolver = new Evolver();
         evolver.evolve();
     }
 
-
-    //TODO SHORTEN RUNTIME (maybe sort)
+    //evolves the population to obtain optimal weights
     public void evolve() {
 
         for (int a = 0; a < generations; a++) {
             //DEBUG time taken
             long startTime = System.nanoTime();
+
             //reset fitness scores at the beginning of every generation
             for (int i = 0; i < population; i++) {
                 brains[i].fitness = 0;
             }
 
+            //obtain fitness scores for every Brain
             for (int i = 0; i < population; i++) {
                 for (int j = 0; j < trials; j++) {
                     brains[i].fitness = brains[i].fitness + gameSimulator(brains[i].brain);
                 }
                 int averageScore = (brains[i].fitness)/trials;
-                //System.out.println(averageScore);
             }
 
             Arrays.sort(brains);
 
             //produces maxChildren # of children into children array
             for (int j = 0; j < maxChildren; j++) {
-                //takes a random sample (size = 100) of the population
+                //takes a percentage of the population as a random sample
                 for (int i = 0; i < sample; i++) {
                     int randomBrainIndex = (int) (rand.nextInt(population));
                     randomBrains[i] = brains[randomBrainIndex].brain;
                     scores[i] = brains[randomBrainIndex].fitness;
                 }
 
-                //TODO implement tournament selection? pair up brains within the sample, pit them against each other
                 //finds the two highest scores from the random sample
                 int highScore1 = Integer.MIN_VALUE;
                 int highScore2 = Integer.MIN_VALUE;
@@ -111,24 +117,16 @@ public class Evolver {
             System.out.printf("Generation %d finished. Time: %f seconds\n", a + 1, (System.nanoTime() - startTime) /
                     1000000000.0);
         }
-        //DEBUG
-        /*for (int i = 0; i < brains.length; i++) {
-            double[] debugWeights = new double[brains[i].brain.getWeights().length];
-            debugWeights = brains[i].brain.getWeights();
-            for (int j = 0; j < debugWeights.length; j++) {
-                System.out.print(debugWeights[j]+" ");
-            }
-            System.out.println();
-        }*/
+
         Arrays.sort(brains);
 
         System.out.print("Optimal weights are: ");
-        //final weights
+        //optimal weights
         for (int i = 0; i < brains[brains.length-1].brain.getWeights().length; i++) {
             System.out.print(brains[brains.length-1].brain.getWeights()[i]+", ");
         }
 
-        System.out.println();
+        /*System.out.println();
 
         for (int j = 0; j < brains.length; j++) {
             for (int i = 0; i < brains[j].brain.getWeights().length; i++) {
@@ -136,7 +134,7 @@ public class Evolver {
 
             }
             System.out.println();
-        }
+        }*/
     }
 
     //takes 2 brains and produces an offspring
@@ -158,6 +156,7 @@ public class Evolver {
         return child;
     }
 
+    //potentially mutates a weight of the child
     public double[] mutate(double[] weights) {
         if (rand.nextInt(100) < mutationChance) {
             int weightIndex = rand.nextInt(weights.length);
@@ -166,6 +165,7 @@ public class Evolver {
         return weights;
     }
 
+    //simulates a game for a given brain, returns rows cleared
     public int gameSimulator(Brain simBrain) {
         int score = 0;
         int pieces = 0;
@@ -207,15 +207,13 @@ public class Evolver {
     }
 }
 
-//needed for sorting
+//needed for sorting, contains brain and fitness score
 class TacticalBrainFitness implements Comparable<TacticalBrainFitness>{
 
     TacticalBrain brain;
     int fitness;
 
-    public TacticalBrainFitness() {
-
-    }
+    public TacticalBrainFitness() {}
 
     @Override
     public int compareTo(TacticalBrainFitness x) {
