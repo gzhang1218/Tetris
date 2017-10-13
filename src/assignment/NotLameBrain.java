@@ -41,6 +41,7 @@ public class NotLameBrain implements Brain {
 
     /**
      * Test all of the places we can put the current Piece, including rotations
+     * TODO fails to enumerate all options - needs to rotate before translating
      */
     private void enumerateOptions(Board currentBoard) {
         // Check out rotations in place

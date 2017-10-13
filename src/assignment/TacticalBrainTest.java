@@ -13,13 +13,11 @@ public class TacticalBrainTest {
         board.nextPiece(TetrisPiece.getPiece(TetrisPiece.I));
 
         // nextMove calls enumerateOptions
-        // After that there should be
-        // 7 translations x 4 rotations
-        // = 28 different options
         Board.Action action = brain.nextMove(board);
 
-        assertEquals(4 * 7, brain.getOptions().size());
-        assertEquals(4 * 7, brain.getFirstMoves().size());
+        // after enumerate options, should be as many elements as possible rotations + translations
+        assertEquals(2 * 7 + 2 * 10, brain.getOptions().size());
+        assertEquals(2 * 7 + 2 * 10, brain.getFirstMoves().size());
 
         // also check that the action is either LEFT, RIGHT, DROP, COUNTERCLOCKWISE, or CLOCKWISE
         assertTrue(action == Board.Action.LEFT || action == Board.Action.RIGHT
@@ -27,12 +25,30 @@ public class TacticalBrainTest {
                 || action == Board.Action.CLOCKWISE);
 
         // repeat checking the size of the options for different pieces
-        // adding a vertical stick
-        board.nextPiece(TetrisPiece.getPiece(TetrisPiece.I).nextRotation());
+
+        // adding a T piece
+        board.nextPiece(TetrisPiece.getPiece(TetrisPiece.T));
         brain.nextMove(board);
-        // should be 10 translations and 4 rotations = 40 options
-        assertEquals(4 * 10, brain.getOptions().size());
-        assertEquals(4 * 10, brain.getFirstMoves().size());
+        assertEquals(2 * 8 + 2 * 9, brain.getOptions().size());
+        assertEquals(2 * 8 + 2 * 9, brain.getFirstMoves().size());
+
+        // adding a RD piece
+        board.nextPiece(TetrisPiece.getPiece(TetrisPiece.RD));
+        brain.nextMove(board);
+        assertEquals(2 * 8 + 2 * 9, brain.getOptions().size());
+        assertEquals(2 * 8 + 2 * 9, brain.getFirstMoves().size());
+
+        // adding a LD piece
+        board.nextPiece(TetrisPiece.getPiece(TetrisPiece.LD));
+        brain.nextMove(board);
+        assertEquals(2 * 8 + 2 * 9, brain.getOptions().size());
+        assertEquals(2 * 8 + 2 * 9, brain.getFirstMoves().size());
+
+        // adding a square piece
+        board.nextPiece(TetrisPiece.getPiece(TetrisPiece.S));
+        brain.nextMove(board);
+        assertEquals(4 * 9, brain.getOptions().size());
+        assertEquals(4 * 9, brain.getFirstMoves().size());
 
     }
 

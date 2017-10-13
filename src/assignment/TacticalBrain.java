@@ -69,52 +69,95 @@ public class TacticalBrain implements Brain {
 
     /**
      * Test all drops with rotations
+     *
+     * UPDATE: needed to rotate before translating -- I pieces were not working!
      */
     void enumerateOptions(Board currentBoard) {
-        // Check out rotations in place
-        Board center = currentBoard.testMove(Board.Action.NOTHING); // just copy the board
-        options.add(center.testMove(Board.Action.DROP));
+
+        // get copies of the board in the 4 rotation states
+        Board zero = currentBoard.testMove(Board.Action.NOTHING); // just copy the board
+        Board left = zero.testMove(Board.Action.COUNTERCLOCKWISE);
+        Board two = left.testMove(Board.Action.COUNTERCLOCKWISE);
+        Board right = two.testMove(Board.Action.COUNTERCLOCKWISE);
+
+        // get plain drops
+        options.add(zero.testMove(Board.Action.DROP));
         firstMoves.add(Board.Action.DROP);
-        for(int i = 0; i < 3; i++) {
-            center.move(Board.Action.CLOCKWISE);
-            options.add(center.testMove(Board.Action.DROP));
-            firstMoves.add(Board.Action.CLOCKWISE);
-        }
+        options.add(left.testMove(Board.Action.DROP));
+        firstMoves.add(Board.Action.COUNTERCLOCKWISE);
+        options.add(zero.testMove(Board.Action.DROP));
+        firstMoves.add(Board.Action.COUNTERCLOCKWISE);
+        options.add(zero.testMove(Board.Action.DROP));
+        firstMoves.add(Board.Action.CLOCKWISE);
 
+        // CHECKING LEFT TRANSLATIONS
 
-        // Now we'll add all the places to the left we can DROP
-        Board left = currentBoard.testMove(Board.Action.LEFT);
-        while (left.getLastResult() == Board.Result.SUCCESS) {
-            options.add(left.testMove(Board.Action.DROP));
+        // go through left translations of the spawn state
+        Board left0 = zero.testMove(Board.Action.LEFT);
+        while (left0.getLastResult() == Board.Result.SUCCESS) {
+            options.add(left0.testMove(Board.Action.DROP));
             firstMoves.add(Board.Action.LEFT);
-
-            // before the left shift, test out rotations too
-            Board leftCenter = left.testMove(Board.Action.NOTHING);
-            for(int i = 0; i < 3; i++) {
-                leftCenter.move(Board.Action.CLOCKWISE);
-                options.add(leftCenter.testMove(Board.Action.DROP));
-                firstMoves.add(Board.Action.LEFT);
-            }
-
-            left.move(Board.Action.LEFT);
+            left0.move(Board.Action.LEFT);
         }
 
-        // And then the same thing to the right
-        Board right = currentBoard.testMove(Board.Action.RIGHT);
-        while (right.getLastResult() == Board.Result.SUCCESS) {
-            options.add(right.testMove(Board.Action.DROP));
+        // go through left translations of the left state
+        Board leftL = left.testMove(Board.Action.LEFT);
+        while (leftL.getLastResult() == Board.Result.SUCCESS) {
+            options.add(leftL.testMove(Board.Action.DROP));
+            firstMoves.add(Board.Action.COUNTERCLOCKWISE);
+            leftL.move(Board.Action.LEFT);
+        }
+
+        // go through left translations of the 180 state
+        Board left2 = two.testMove(Board.Action.LEFT);
+        while (left2.getLastResult() == Board.Result.SUCCESS) {
+            options.add(left2.testMove(Board.Action.DROP));
+            firstMoves.add(Board.Action.COUNTERCLOCKWISE);
+            left2.move(Board.Action.LEFT);
+        }
+
+        // go through left translations of the right state
+        Board leftR = right.testMove(Board.Action.LEFT);
+        while (leftR.getLastResult() == Board.Result.SUCCESS) {
+            options.add(leftR.testMove(Board.Action.DROP));
+            firstMoves.add(Board.Action.CLOCKWISE);
+            leftR.move(Board.Action.LEFT);
+        }
+
+        // CHECKING RIGHT TRANSLATIONS
+
+        // go through right translations of the spawn state
+        Board right0 = zero.testMove(Board.Action.RIGHT);
+        while (right0.getLastResult() == Board.Result.SUCCESS) {
+            options.add(right0.testMove(Board.Action.DROP));
             firstMoves.add(Board.Action.RIGHT);
-
-            // before the left shift, test out rotations too
-            Board rightCenter = right.testMove(Board.Action.NOTHING);
-            for(int i = 0; i < 3; i++) {
-                rightCenter.move(Board.Action.CLOCKWISE);
-                options.add(rightCenter.testMove(Board.Action.DROP));
-                firstMoves.add(Board.Action.RIGHT);
-            }
-
-            right.move(Board.Action.RIGHT);
+            right0.move(Board.Action.RIGHT);
         }
+
+        // go through right translations of the left state
+        Board rightL = left.testMove(Board.Action.RIGHT);
+        while (rightL.getLastResult() == Board.Result.SUCCESS) {
+            options.add(rightL.testMove(Board.Action.DROP));
+            firstMoves.add(Board.Action.COUNTERCLOCKWISE);
+            rightL.move(Board.Action.RIGHT);
+        }
+
+        // go through right translations of the 180 state
+        Board right2 = two.testMove(Board.Action.RIGHT);
+        while (right2.getLastResult() == Board.Result.SUCCESS) {
+            options.add(right2.testMove(Board.Action.DROP));
+            firstMoves.add(Board.Action.COUNTERCLOCKWISE);
+            right2.move(Board.Action.RIGHT);
+        }
+
+        // go through right translations of the right state
+        Board rightR = right.testMove(Board.Action.RIGHT);
+        while (rightR.getLastResult() == Board.Result.SUCCESS) {
+            options.add(rightR.testMove(Board.Action.DROP));
+            firstMoves.add(Board.Action.CLOCKWISE);
+            rightR.move(Board.Action.RIGHT);
+        }
+
     }
 
     double scoreBoard(Board newBoard) {
