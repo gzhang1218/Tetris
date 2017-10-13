@@ -7,15 +7,15 @@ public class TacticalBrain implements Brain {
     private ArrayList<Board> options;
     private ArrayList<Board.Action> firstMoves;
 
-    private static final int WEIGHTS = 5;
+    private static final int WEIGHTS = 7;
     private double[] weights = new double[WEIGHTS];
 
     private Random rand = new Random();
 
     public TacticalBrain() {
         //weights = new double[]{-0.6102501489040298, 0.714374500112446, -0.9015603583671786, -0.4715603583671786, -0.52544587956874866};
-        weights = new double[]{-0.6804937183999809, 0.8854818928957194, -1.4716016674614056, 0.025372751930167067, -0.3312560414691705};
-        //genRandomWeights();
+        weights = new double[]{-1.020828988488132, -0.9292577207656729, -1.3586823994937924, -0.20814941564555897, -0.6152158288454252, 0.11026280385014185, -0.3805911191245738};
+        genRandomWeights();
     }
 
     public double[] getWeights(){
@@ -28,9 +28,8 @@ public class TacticalBrain implements Brain {
 
     public void genRandomWeights() {
         for (int i = 0; i < WEIGHTS; i++) {
-            weights[i] = (rand.nextDouble() * 1.5) - 1.5;
+            weights[i] = (rand.nextDouble() * 2.0) - 2.0;
         }
-        weights[1] = rand.nextDouble()*1.5 - 0.1;
     }
 
     /**
@@ -164,7 +163,21 @@ public class TacticalBrain implements Brain {
             inconsistency = inconsistency + Math.abs(diff);
         }
 
-        double score = weights[0]*totalHeight + weights[1]*fullRows + weights[2]*holes + weights[3]*blockades + weights[4]*inconsistency;
+        int edgeBlocks = 0;
+        for (int y = 0; y < newBoard.getHeight(); y++)
+        {
+            if (newBoard.getGrid(0,y))
+                edgeBlocks++;
+            if (newBoard.getGrid((newBoard.getWidth()-1),y))
+                edgeBlocks++;
+        }
+        int floorBlocks = 0;
+        for (int x = 0; x < newBoard.getWidth(); x++) {
+            if (newBoard.getGrid(x,0))
+                floorBlocks++;
+        }
+
+        double score = weights[0]*totalHeight + weights[1]*fullRows + weights[2]*holes + weights[3]*blockades + weights[4]*inconsistency + weights[5]*edgeBlocks + weights[6]*floorBlocks;
         return score;
     }
 
