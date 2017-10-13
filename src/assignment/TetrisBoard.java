@@ -707,21 +707,21 @@ public final class TetrisBoard implements Board {
         return lastResult;
     }
 
-    public void setLastResult(Result result) { this.lastResult = result; }
+    private void setLastResult(Result result) { this.lastResult = result; }
 
     @Override
     public Action getLastAction() {
         return lastAction;
     }
 
-    public void setLastAction(Action action) { this.lastAction = action; }
+    private void setLastAction(Action action) { this.lastAction = action; }
 
     @Override
     public int getRowsCleared() {
         return rowsCleared;
     }
 
-    public void setRowsCleared(int rowsCleared) { this.rowsCleared = rowsCleared; }
+    private void setRowsCleared(int rowsCleared) { this.rowsCleared = rowsCleared; }
 
     @Override
     public int getWidth() {
@@ -738,7 +738,7 @@ public final class TetrisBoard implements Board {
         return maxHeight;
     }
 
-    public void setMaxHeight(int maxHeight) {
+    private void setMaxHeight(int maxHeight) {
         this.maxHeight = maxHeight;
     }
 
@@ -763,7 +763,7 @@ public final class TetrisBoard implements Board {
         return colHeights[x];
     }
 
-    public void setColumnHeight(int col, int val) { this.colHeights[col] = val; }
+    private void setColumnHeight(int col, int val) { this.colHeights[col] = val; }
 
     /**
      * This method counts and returns the number of filled blocks in a row
@@ -784,14 +784,14 @@ public final class TetrisBoard implements Board {
             return true;
         return board[y][x];
     }
-    public void setGrid(int row, int col, boolean val) { board[row][col] = val; }
+    private void setGrid(int row, int col, boolean val) { board[row][col] = val; }
 
-    public void setX(int x) { this.x = x; }
+    private void setX(int x) { this.x = x; }
 
-    public int getX() { return this.x; }
+    private int getX() { return this.x; }
 
-    public void setY(int y) { this.y = y; }
+    private void setY(int y) { this.y = y; }
 
-    public int getY() { return this.y; }
+    private int getY() { return this.y; }
 
 }
