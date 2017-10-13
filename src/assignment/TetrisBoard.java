@@ -236,7 +236,7 @@ public final class TetrisBoard implements Board {
                 return Result.SUCCESS;
             case RIGHT:
                 // check if the piece is on the right border
-                if (x + piece.getWidth() == JTetris.WIDTH) {
+                if (x + piece.getWidth() == getWidth()) {
                     lastResult = Result.OUT_BOUNDS;
                     return Result.OUT_BOUNDS;
                 }
@@ -561,7 +561,7 @@ public final class TetrisBoard implements Board {
         int fullRowCount = 0;
 
         // moving from the bottom up, counting full rows and shifting non-full rows down by 'fullRowCount'
-        for (int row = 0; row < JTetris.HEIGHT; row++ ) {
+        for (int row = 0; row < getHeight(); row++ ) {
             if (isFull(row)) {
                 fullRowCount++;
             } else {
@@ -572,14 +572,20 @@ public final class TetrisBoard implements Board {
 
         // clear the top 'fullRowCount' rows
         for (int rowCount = 0; rowCount < fullRowCount; rowCount ++)
-            Arrays.fill(board[JTetris.HEIGHT - 1 - rowCount], false);
+            Arrays.fill(board[getHeight() - 1 - rowCount], false);
 
         rowsCleared = fullRowCount;
 
         // adjusting maxHeight, colHeights
         maxHeight -= fullRowCount;
-        for (int col = 0; col < JTetris.WIDTH; col ++ )
-            colHeights[col] = colHeights[col] - fullRowCount >= 0 ? colHeights[col] - fullRowCount : 0; // making sure colHeights stay at 0 or above
+        for (int col = 0; col < getWidth(); col ++ ) {
+            for (int row = getHeight() - 1; row >= 0; row-- ) {
+                if (board[row][col] ) {
+                    setColumnHeight(col, row + 1);
+                    break;
+                }
+            }
+        }
     }
 
     /**
@@ -588,7 +594,7 @@ public final class TetrisBoard implements Board {
      * @param   row     The row to inspect
      */
     private boolean isFull(int row) {
-        for (int col = 0; col < JTetris.WIDTH; col++) {
+        for (int col = 0; col < getWidth(); col++) {
             if (!getGrid(col, row))
                 return false;
         }
