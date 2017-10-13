@@ -68,9 +68,7 @@ public class TacticalBrain implements Brain {
     }
 
     /**
-     * Test all of the places we can put the current Piece.
-     * Since this is just a Lame Brain, we aren't going to do smart
-     * things like rotating pieces.
+     * Test all drops with rotations
      */
     void enumerateOptions(Board currentBoard) {
         // Check out rotations in place
@@ -173,5 +171,13 @@ public class TacticalBrain implements Brain {
 
         double score = weights[0]*totalHeight + weights[1]*fullRows + weights[2]*holes + weights[3]*blockades + weights[4]*inconsistency + weights[5]*edgeBlocks + weights[6]*floorBlocks;
         return score;
+    }
+
+    public ArrayList<Board.Action> getFirstMoves() {
+        return firstMoves;
+    }
+
+    public ArrayList<Board> getOptions() {
+        return options;
     }
 }
