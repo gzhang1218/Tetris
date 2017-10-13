@@ -15,7 +15,7 @@ public class TacticalBrain implements Brain {
     public TacticalBrain() {
         //weights = new double[]{-0.6102501489040298, 0.714374500112446, -0.9015603583671786, -0.4715603583671786, -0.52544587956874866};
         weights = new double[]{-0.434346512799488, 0.8172304063324136, -1.1769651603417894, -0.14603604465231043, -0.2289493761890697};
-        genRandomWeights();
+        //genRandomWeights();
     }
 
     public double[] getWeights(){

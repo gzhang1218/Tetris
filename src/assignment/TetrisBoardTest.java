@@ -16,7 +16,7 @@ public class TetrisBoardTest {
     }
 
     @Test
-    public void testMove() throws Exception {
+    public void testTestMove() throws Exception {
         // make a 'standard' board
         Board board = new TetrisBoard(JTetris.WIDTH, JTetris.HEIGHT);
 
@@ -31,6 +31,7 @@ public class TetrisBoardTest {
         // now move the original LEFT
         board.move(Board.Action.LEFT);
 
+        // the board states should be identical but separate
         assertEquals(board, board2);
 
         // now have a testMove off of the testMove
