@@ -122,6 +122,14 @@ public class Evolver {
         for (int i = 0; i < brains[brains.length-1].brain.getWeights().length; i++) {
             System.out.print(brains[brains.length-1].brain.getWeights()[i]+", ");
         }
+
+        System.out.println();
+
+        for (int j = 0; j < brains.length; j++) {
+            for (int i = 0; i < brains[j].brain.getWeights().length; i++) {
+                System.out.print(brains[j].brain.getWeights()[i] + ", ");
+            }
+        }
     }
 
     //takes 2 brains and produces an offspring
