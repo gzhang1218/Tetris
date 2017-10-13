@@ -16,7 +16,48 @@ public class TetrisBoardTest {
 
     @Test
     public void testMove() throws Exception {
+        int myWidth = JTetris.WIDTH * 2, myHeight = JTetris.HEIGHT * 3;
 
+        // create a board of arbitrary dimensions
+        Board board = new TetrisBoard(myWidth, myHeight);
+
+        // check the dimension getters
+        assertEquals(myWidth, board.getWidth());
+        assertEquals(myHeight, board.getHeight());
+
+        // try to move without a piece, should have NO_PIECE return
+        assertEquals(Board.Result.NO_PIECE, board.move(Board.Action.DOWN));
+
+        // even though NO_PIECE, the lastAction and lastResult should match up
+        assertEquals(Board.Action.DOWN, board.getLastAction());
+        assertEquals(Board.Result.NO_PIECE, board.getLastResult());
+
+        // give a piece
+        board.nextPiece(TetrisPiece.getPiece(stickPiece));
+
+        //  test each of the actions
+        assertEquals(Board.Result.SUCCESS, board.move(Board.Action.LEFT));
+        assertEquals(Board.Result.SUCCESS, board.move(Board.Action.RIGHT));
+        assertEquals(Board.Result.SUCCESS, board.move(Board.Action.DOWN));
+        assertEquals(Board.Result.SUCCESS, board.move(Board.Action.CLOCKWISE));
+        assertEquals(Board.Result.SUCCESS, board.move(Board.Action.COUNTERCLOCKWISE));
+        assertEquals(Board.Result.SUCCESS, board.move(Board.Action.NOTHING));
+        assertEquals(Board.Result.SUCCESS, board.move(Board.Action.HOLD));
+
+        // DROP should return PLACE
+        assertEquals(Board.Result.PLACE, board.move(Board.Action.DROP));
+
+        // there should be NO_PIECE after a PLACE
+        assertEquals(Board.Result.NO_PIECE, board.move(Board.Action.DOWN));
+
+        // did the piece actually fall down
+        assertEquals(4, board.getRowWidth(0));
+        for (int col = 0; col < board.getWidth(); col++) {
+            if (col >= board.getWidth() / 2 && col < board.getWidth() / 2 + 4)
+                assertEquals(1, board.getColumnHeight(col));
+            else
+                assertEquals(0, board.getColumnHeight(col));
+        }
     }
 
     @Test
