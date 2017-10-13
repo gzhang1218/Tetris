@@ -6,7 +6,7 @@ import java.io.*;
 public class Evolver {
 
     private Board board;
-    private int population = 50;
+    private int population = 500;
     private TacticalBrainFitness[] brains = new TacticalBrainFitness[population];
     //private TacticalBrain[] testBrains = new TacticalBrain[population];
 
@@ -24,8 +24,8 @@ public class Evolver {
     private int maxChildren = (int)(population*childPercentage);
     private TacticalBrain[] children = new TacticalBrain[maxChildren];
 
-    private int generations = 50;
-    private int trials = 15;
+    private int generations = 70;
+    private int trials = 20;
     private int scoreLimit = 200;
     private int pieceLimit = 500;
     private int mutationChance = 20;
@@ -39,6 +39,7 @@ public class Evolver {
         for(int i = 0; i < population; i++) {
             brains[i] = new TacticalBrainFitness();
             brains[i].brain = new TacticalBrain();
+            brains[i].brain.genRandomWeights();
         }
     }
 
@@ -128,6 +129,7 @@ public class Evolver {
         for (int j = 0; j < brains.length; j++) {
             for (int i = 0; i < brains[j].brain.getWeights().length; i++) {
                 System.out.print(brains[j].brain.getWeights()[i] + ", ");
+                System.out.println();
             }
         }
     }
@@ -150,7 +152,6 @@ public class Evolver {
         child.setWeights(averageWeights);
         return child;
     }
-
 
     public double[] mutate(double[] weights) {
         if (rand.nextInt(100) < mutationChance) {

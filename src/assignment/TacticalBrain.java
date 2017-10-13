@@ -15,7 +15,7 @@ public class TacticalBrain implements Brain {
     public TacticalBrain() {
         //weights = new double[]{-0.6102501489040298, 0.714374500112446, -0.9015603583671786, -0.4715603583671786, -0.52544587956874866};
         weights = new double[]{-1.020828988488132, -0.9292577207656729, -1.3586823994937924, -0.20814941564555897, -0.6152158288454252, 0.11026280385014185, -0.3805911191245738};
-        genRandomWeights();
+        //genRandomWeights();
     }
 
     public double[] getWeights(){
@@ -58,11 +58,6 @@ public class TacticalBrain implements Brain {
         System.out.println("I'm " + firstMoves.get(bestIndex));
 
         System.out.println("Score is: " + scoreBoard(options.get(bestIndex)));*/
-        /*System.out.println("Total Height: "+scoreBoardDebug(options.get(bestIndex))[0]);
-        System.out.println("Full Rows: "+scoreBoardDebug(options.get(bestIndex))[1]);
-        System.out.println("Holes: "+scoreBoardDebug(options.get(bestIndex))[2]);
-        System.out.println("Inconsistency: "+scoreBoardDebug(options.get(bestIndex))[3]);
-        System.out.println();*/
 
         // We want to return the first move on the way to the best Board
         return firstMoves.get(bestIndex);
@@ -131,12 +126,7 @@ public class TacticalBrain implements Brain {
         //TODO check if we are using rowsCleared correctly in TetrisBoard
         //TODO also check if we are catching the fullRows before they are cleared
         //number of rows that can be cleared, maximize this
-        int fullRows = 0;
-        for (int i = 0; i < newBoard.getHeight(); i++) {
-            if (newBoard.getRowWidth(i) == newBoard.getWidth()) {
-                fullRows++;
-            }
-        }
+        int fullRows = newBoard.getRowsCleared();
         //System.out.println(fullRows);
 
         //TODO: implement hole function (empty space such
@@ -179,48 +169,5 @@ public class TacticalBrain implements Brain {
 
         double score = weights[0]*totalHeight + weights[1]*fullRows + weights[2]*holes + weights[3]*blockades + weights[4]*inconsistency + weights[5]*edgeBlocks + weights[6]*floorBlocks;
         return score;
-    }
-
-    private int[] scoreBoardDebug(Board newBoard) {
-        //TODO add more variables??? Ex: edges touching another block, edges touching wall, edges touching floor
-        //sum of all column heights, want to minimize this
-        int totalHeight = 0;
-        for (int i = 0; i < newBoard.getWidth(); i++) {
-            totalHeight = totalHeight + newBoard.getColumnHeight(i);
-        }
-
-        //TODO check if we are using rowsCleared correctly in TetrisBoard
-        //TODO also check if we are catching the fullRows before they are cleared
-        //number of rows that can be cleared, maximize this
-        int fullRows = 0;
-        for (int i = 0; i < newBoard.getHeight(); i++) {
-            if (newBoard.getRowWidth(i) == newBoard.getWidth()) {
-                fullRows++;
-            }
-        }
-        //System.out.println(fullRows);
-
-        //TODO: implement hole function (empty space such
-        //TODO: that there is at least one tile in column above it)
-        //TODO: Constant time?
-        //number of holes present in the board, minimize this
-        int holes = 0;
-        for (int x = 0; x < newBoard.getWidth(); x++) {
-            for (int i = 0; i < newBoard.getColumnHeight(x); i++) {
-                if (!newBoard.getGrid(x, i))
-                    holes++;
-            }
-        }
-
-        // "bumpiness" of the board, sum of the differences of all adjacent columns
-        // minimize this
-        int inconsistency = 0;
-        for (int i = 0; i < newBoard.getWidth()-1; i++) {
-            int diff = newBoard.getColumnHeight(i) - newBoard.getColumnHeight(i+1);
-            inconsistency = inconsistency + Math.abs(diff);
-        }
-
-        int[] stats = {totalHeight,fullRows, holes, inconsistency};
-        return stats;
     }
 }
