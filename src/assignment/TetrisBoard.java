@@ -587,6 +587,8 @@ public final class TetrisBoard implements Board {
                     setColumnHeight(col, row + 1);
                     break;
                 }
+                // if a block is never encountered in the row
+                setColumnHeight(col, 0);
             }
         }
     }
