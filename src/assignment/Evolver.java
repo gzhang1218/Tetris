@@ -6,7 +6,7 @@ import java.io.*;
 public class Evolver {
 
     private Board board;
-    private int population = 500;
+    private int population = 100;
     private TacticalBrainFitness[] brains = new TacticalBrainFitness[population];
     //private TacticalBrain[] testBrains = new TacticalBrain[population];
 
@@ -24,12 +24,12 @@ public class Evolver {
     private int maxChildren = (int)(population*childPercentage);
     private TacticalBrain[] children = new TacticalBrain[maxChildren];
 
-    private int generations = 70;
-    private int trials = 20;
-    private int scoreLimit = 200;
-    private int pieceLimit = 500;
-    private int mutationChance = 20;
-    private double mutationRange = 0.35; //mutations can mutate one weight up to +- mutationRange;
+    private int generations = 25;
+    private int trials = 15;
+    private int scoreLimit = 1000;
+    private int pieceLimit = 2000;
+    private int mutationChance = 10;
+    private double mutationRange = 0.2; //mutations can mutate one weight up to +- mutationRange;
 
     private Random rand = new Random();
 
@@ -41,9 +41,11 @@ public class Evolver {
             brains[i].brain = new TacticalBrain();
             brains[i].brain.genRandomWeights();
         }
+        System.out.println("("+population+", "+generations+", "+trials+", "+mutationChance+", "+mutationRange+")");
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
+
         Evolver evolver = new Evolver();
         evolver.evolve();
     }
@@ -129,8 +131,9 @@ public class Evolver {
         for (int j = 0; j < brains.length; j++) {
             for (int i = 0; i < brains[j].brain.getWeights().length; i++) {
                 System.out.print(brains[j].brain.getWeights()[i] + ", ");
-                System.out.println();
+
             }
+            System.out.println();
         }
     }
 

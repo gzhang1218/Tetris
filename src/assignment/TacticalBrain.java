@@ -14,7 +14,11 @@ public class TacticalBrain implements Brain {
 
     public TacticalBrain() {
         //weights = new double[]{-0.6102501489040298, 0.714374500112446, -0.9015603583671786, -0.4715603583671786, -0.52544587956874866};
-        weights = new double[]{-1.020828988488132, -0.9292577207656729, -1.3586823994937924, -0.20814941564555897, -0.6152158288454252, 0.11026280385014185, -0.3805911191245738};
+        //weights = new double[]{-1.020828988488132, 0.9292577207656729, -1.3586823994937924, -0.20814941564555897, -0.6152158288454252, 0.11026280385014185, -0.3805911191245738}; //goodone
+        //weights = new double[]{-1.3067101996001897, -0.5776263525445752, -1.3240709146729546, -0.31311290018089394, -0.7883146132012633, -0.29163742419386496, -0.6307497961281868};
+        //weights = new double[]{-0.510066, 0.760666, -0.35663, 0, -0.184483, 0, 0};
+        //weights = new double[]{-1.5406684363464582, -0.7509873596334373, -1.4781405702056236, -0.3194835404635906, -0.6745877009088455, 0.01867967152179941, -0.565265239315107};
+        weights = new double[]{-1.020828988488132, 0.9292577207656729, -1.3586823994937922, -0.11175037697890922, -0.38568284549465454, 0.12050772756889917, 0}; //bestone
         //genRandomWeights();
     }
 
@@ -117,10 +121,10 @@ public class TacticalBrain implements Brain {
 
     double scoreBoard(Board newBoard) {
         //TODO add more variables??? Ex: edges touching another block, edges touching wall, edges touching floor
-        //sum of all column heights, want to minimize this
+        // get the summed height - each block has value of its height
         int totalHeight = 0;
-        for (int i = 0; i < newBoard.getWidth(); i++) {
-            totalHeight = totalHeight + newBoard.getColumnHeight(i);
+        for (int row = 0; row < newBoard.getHeight(); row++) {
+            totalHeight += (row + 1) * newBoard.getRowWidth(row);
         }
 
         //TODO check if we are using rowsCleared correctly in TetrisBoard
