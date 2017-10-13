@@ -77,7 +77,7 @@ public class TacticalBrain implements Brain {
         // get copies of the board in the 4 rotation states
         Board zero = currentBoard.testMove(Board.Action.NOTHING); // just copy the board
         Board left = zero.testMove(Board.Action.COUNTERCLOCKWISE);
-        Board two = left.testMove(Board.Action.COUNTERCLOCKWISE);
+        Board two = left.testMove(Board.Action.COUNTERCLOCKWISE).testMove(Board.Action.COUNTERCLOCKWISE);
         Board right = two.testMove(Board.Action.COUNTERCLOCKWISE);
 
         // get plain drops, only if the original rotation was successful
