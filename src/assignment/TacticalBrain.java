@@ -15,7 +15,7 @@ public class TacticalBrain implements Brain {
     public TacticalBrain() {
         //weights = new double[]{-0.6102501489040298, 0.714374500112446, -0.9015603583671786, -0.4715603583671786, -0.52544587956874866};
         weights = new double[]{-1.020828988488132, -0.9292577207656729, -1.3586823994937924, -0.20814941564555897, -0.6152158288454252, 0.11026280385014185, -0.3805911191245738};
-        genRandomWeights();
+        //genRandomWeights();
     }
 
     public double[] getWeights(){
@@ -73,7 +73,7 @@ public class TacticalBrain implements Brain {
      * Since this is just a Lame Brain, we aren't going to do smart
      * things like rotating pieces.
      */
-    private void enumerateOptions(Board currentBoard) {
+    void enumerateOptions(Board currentBoard) {
         // Check out rotations in place
         Board center = currentBoard.testMove(Board.Action.NOTHING); // just copy the board
         options.add(center.testMove(Board.Action.DROP));
@@ -120,7 +120,7 @@ public class TacticalBrain implements Brain {
         }
     }
 
-    private double scoreBoard(Board newBoard) {
+    double scoreBoard(Board newBoard) {
         //TODO add more variables??? Ex: edges touching another block, edges touching wall, edges touching floor
         //sum of all column heights, want to minimize this
         int totalHeight = 0;
@@ -222,5 +222,11 @@ public class TacticalBrain implements Brain {
 
         int[] stats = {totalHeight,fullRows, holes, inconsistency};
         return stats;
+    }
+
+    public ArrayList<Board> getOptions() { return options; }
+
+    public ArrayList<Board.Action> getFirstMoves() {
+        return firstMoves;
     }
 }

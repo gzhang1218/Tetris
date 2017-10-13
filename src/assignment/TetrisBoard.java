@@ -190,9 +190,11 @@ public final class TetrisBoard implements Board {
     }
 
 
-
-    // JTetris will use this constructor
+    /**
+     * We assume width and height are at least 4 - an IllegalArgumentException is thrown otherwise
+     */
     public TetrisBoard(int width, int height) {
+        if (width < 4 || height < 4) throw new IllegalArgumentException("Both width and height must be at least 4");
         board = new boolean[height][width];
         colHeights = new int[width];
     }
@@ -655,6 +657,7 @@ public final class TetrisBoard implements Board {
 
     /**
      * This method reassigns the current piece to the provided piece
+     * x and y are set right above the playing board, centered left-to-right
      */
     @Override
     public void nextPiece(Piece p) {

@@ -253,7 +253,7 @@ public final class TetrisPiece extends Piece {
             Point p = getBody()[i];
             boolean found = false;
             for (int j = 0; j < o.getBody().length; j++) {
-                if (p.equals(o.getBody()[i]))
+                if (p.equals(o.getBody()[j]))
                     found = true;
             }
             if (!found)
