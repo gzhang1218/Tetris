@@ -22,6 +22,7 @@ public final class TetrisBoard implements Board {
     private Action lastAction;
     private Result lastResult;
     private int rowsCleared; // initialized at 0
+    private int totalRowsCleared;
 
     private int maxHeight; // initialized at 0
     private int[] colHeights;
@@ -32,6 +33,9 @@ public final class TetrisBoard implements Board {
     static final int[][][] CW_WALL_KICK_DATA;
     static final int[][][] CCW_I_WALL_KICK_DATA;
     static final int[][][] CW_I_WALL_KICK_DATA;
+
+    private boolean heldUsed;
+    private TetrisPiece heldPiece;
 
     // adding SRS wallkick data
     static {
@@ -265,6 +269,8 @@ public final class TetrisBoard implements Board {
 
                     piece = null; // after a PLACE, piece should be null
 
+                    heldUsed = false;
+
                     lastResult = Result.PLACE;
                     return Result.PLACE;
                 }
@@ -277,6 +283,8 @@ public final class TetrisBoard implements Board {
                         clearRows();
 
                         piece = null; // after a PLACE, piece should be null
+
+                        heldUsed = false;
 
                         lastResult = Result.PLACE;
                         return Result.PLACE;
@@ -301,6 +309,8 @@ public final class TetrisBoard implements Board {
                 clearRows();
 
                 piece = null; // after a PLACE, piece should be null
+
+                heldUsed = false;
 
                 lastResult = Result.PLACE;
                 return Result.PLACE;
@@ -397,9 +407,28 @@ public final class TetrisBoard implements Board {
                 lastResult = Result.SUCCESS;
                 return Result.SUCCESS;
             case HOLD:
-                // TODO implement for karma
-                lastResult = Result.SUCCESS;
-                return Result.SUCCESS;
+                if (!heldUsed) {
+                    if (heldPiece == null) { // first time HOLD has been used
+                        clearCurrentPos();
+                        heldPiece = piece;
+                        piece = null;
+                        lastResult = Result.NO_PIECE;
+                    }
+                    else {
+                        clearCurrentPos();
+                        TetrisPiece swapPiece = piece;
+                        piece = heldPiece;
+                        heldPiece = swapPiece;
+                        x = getWidth() / 2;
+                        y = getHeight() - JTetris.TOP_SPACE;
+                        placePos();
+                        lastResult = Result.SUCCESS;
+                    }
+                    heldUsed = true;
+                    return lastResult;
+                }
+                lastResult = Result.OUT_BOUNDS;
+                return lastResult;
         }
         return Result.NO_PIECE;
     }
@@ -577,6 +606,7 @@ public final class TetrisBoard implements Board {
             Arrays.fill(board[getHeight() - 1 - rowCount], false);
 
         rowsCleared = fullRowCount;
+        totalRowsCleared += rowsCleared;
 
         // adjusting maxHeight, colHeights
         maxHeight -= fullRowCount;
@@ -654,6 +684,8 @@ public final class TetrisBoard implements Board {
         copy.nextPiece(this.piece);
         copy.setX(this.x);
         copy.setY((this.y));
+        copy.nextHeldPiece(this.heldPiece);
+
 
         return copy;
     }
@@ -666,7 +698,11 @@ public final class TetrisBoard implements Board {
     public void nextPiece(Piece p) {
         this.piece = (TetrisPiece)p;
         x = getWidth() / 2;
-        y = getHeight() - 4;
+        y = getHeight() - JTetris.TOP_SPACE;
+    }
+
+    public void nextHeldPiece(Piece p) {
+        this.heldPiece = (TetrisPiece)p;
     }
 
     /**
@@ -800,4 +836,11 @@ public final class TetrisBoard implements Board {
 
     private int getY() { return this.y; }
 
+    public boolean getHeldUsed() { return this.heldUsed; }
+
+    public Piece getHeldPiece() { return this.heldPiece; }
+
+    public Piece getPiece() { return this.piece; }
+
+    public int getTotalRowsCleared() { return this.totalRowsCleared; }
 }

@@ -99,6 +99,7 @@ public class JTetris extends JComponent {
 
     // Controls
     protected JLabel countLabel;
+    protected JLabel scoreLabel;
     protected JLabel timeLabel;
     protected JButton startButton;
     protected JButton stopButton;
@@ -172,6 +173,12 @@ public class JTetris extends JComponent {
           }
         }, "drop", KeyStroke.getKeyStroke('w'),
         WHEN_IN_FOCUSED_WINDOW
+        );
+
+        // HOLD
+        registerKeyboardAction( new ActionListener() {
+            public void actionPerformed(ActionEvent e) { tick(Board.Action.HOLD); }
+            }, "hold", KeyStroke.getKeyStroke('h'), WHEN_IN_FOCUSED_WINDOW
         );
 
         // Create the Timer object and have it send
@@ -276,6 +283,7 @@ public class JTetris extends JComponent {
         }
 
         repaint();
+        scoreLabel.setText(Integer.toString(((TetrisBoard)board).getTotalRowsCleared()));
     }
 
     /**
@@ -323,6 +331,7 @@ public class JTetris extends JComponent {
         int spacerY = yPixel(board.getHeight() - TOP_SPACE - 1);
         g.drawLine(0, spacerY, getWidth() - 1, spacerY);
 
+
         // check if we are drawing with clipping
         //Shape shape = g.getClip();
         Rectangle clip = null;
@@ -351,6 +360,17 @@ public class JTetris extends JComponent {
                 }
             }
 
+            // draw the HELD piece
+            g.drawLine(getWidth()/3, 0, getWidth()/3, spacerY);
+            g.setColor(Color.gray);
+            Piece heldPiece = ((TetrisBoard)board).getHeldPiece();
+            if (heldPiece != null) {
+                for (Point point : heldPiece.getBody()) {
+                    g.fillRect(xPixel((int) point.getX())*2/3 + (getWidth()/3-heldPiece.getWidth()*dx)/2 + 6, yPixel(HEIGHT + TOP_SPACE - (int) point.getY())*2/3 + (spacerY-heldPiece.getHeight()*dy)/2 + 15, dx*2/3, dy*2/3);
+                }
+            }
+            g.setColor(Color.black);
+
             // draw from 0 up to the col height
             for (int y = 0; y < bHeight; y++) {
                 if (board.getGrid(x, y)) {
@@ -359,7 +379,8 @@ public class JTetris extends JComponent {
                     // +1 to leave a white border
                     g.fillRect(left + 1, yPixel(y) + 1, dx, dy);
 
-                    if (filled) g.setColor(Color.black);
+                    if (filled) g.setColor(Color.BLACK);
+                    //g.setColor(((TetrisPiece)((TetrisBoard)board).getPiece()).getColor());
                 }
             }
         }
@@ -386,6 +407,10 @@ public class JTetris extends JComponent {
         // COUNT
         countLabel = new JLabel("0");
         panel.add(countLabel);
+
+        //SCORE (rows)
+        scoreLabel = new JLabel("0");
+        panel.add(scoreLabel);
 
         // TIME
         timeLabel = new JLabel(" ");

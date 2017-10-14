@@ -16,6 +16,7 @@ public final class TetrisPiece extends Piece {
     private int[] skirt, lSkirt, rSkirt;
     private char rotationState;
     private boolean isI;
+    private static Color color = Color.RED;
 
     // A S S U M I N G that the JTetris pieceStrings will not change
     static final String I = "0 0  1 0  2 0  3 0";
@@ -93,24 +94,31 @@ public final class TetrisPiece extends Piece {
                 one.setRotationState('R');
                 two.setRotationState('0');
                 three.setRotationState('L');
+                color = Color.RED;
             case RD:
                 anchorIndex = 1; // the 2nd point is the anchor
+                color = Color.ORANGE;
                 break;
             case L:
+                color = Color.YELLOW;
             case T:
                 // reassign the rotationStates to align with the website for J, L, T
                 piece.setRotationState('2');
                 one.setRotationState('R');
                 two.setRotationState('0');
                 three.setRotationState('L');
+                color = Color.GREEN;
             case LD:
                 anchorIndex = 2; // the 3rd point is the anchor
+                color = Color.BLUE;
                 break;
             case S:
                 isSquare = true;
+                color = Color.MAGENTA;
                 break;
             case I:
                 isLine = true;
+                color = Color.CYAN;
                 break;
         }
 
@@ -298,4 +306,7 @@ public final class TetrisPiece extends Piece {
         isI = i;
     }
 
+    public Color getColor() {
+        return this.color;
+    }
 }

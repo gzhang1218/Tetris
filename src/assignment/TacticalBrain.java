@@ -12,6 +12,8 @@ public class TacticalBrain implements Brain {
 
     private Random rand = new Random();
 
+    private boolean heldUsed;
+
     //brain is constructed using the given weights
     public TacticalBrain() {
         weights = new double[]{-1.020828988488132, 0.9292577207656729, -1.5586823994937922, -0.11175037697890922, -0.38568284549465454, 0.12050772756889917, 0};
@@ -39,6 +41,10 @@ public class TacticalBrain implements Brain {
         options = new ArrayList<>();
         firstMoves = new ArrayList<>();
         enumerateOptions(currentBoard);
+        heldUsed = ((TetrisBoard)currentBoard).getHeldUsed();
+        if (!heldUsed) {
+            enumerateOptionsHold(currentBoard);
+        }
 
         double best = Integer.MIN_VALUE;
         int bestIndex = 0;
@@ -177,8 +183,121 @@ public class TacticalBrain implements Brain {
                 rightR.move(Board.Action.RIGHT);
             }
         }
-
     }
+
+    void enumerateOptionsHold(Board currentBoard) {
+
+        // get copies of the board in the 4 rotation states
+        Board holdBoard = currentBoard.testMove(Board.Action.HOLD);
+        Board zero = holdBoard.testMove(Board.Action.NOTHING); // just copy the board
+        Board left = zero.testMove(Board.Action.COUNTERCLOCKWISE);
+        Board two = left.testMove(Board.Action.COUNTERCLOCKWISE);
+        Board right = zero.testMove(Board.Action.CLOCKWISE);
+
+        // get plain drops, only if the original rotation was successful
+        // always add a DROP - if NO_PIECE will at least have a single entry in nextMove
+        options.add(zero.testMove(Board.Action.DROP));
+        firstMoves.add(Board.Action.HOLD);
+
+        if (left.getLastResult() == Board.Result.SUCCESS) {
+            options.add(left.testMove(Board.Action.DROP));
+            firstMoves.add(Board.Action.HOLD);
+        }
+        if (two.getLastResult() == Board.Result.SUCCESS) {
+            options.add(two.testMove(Board.Action.DROP));
+            firstMoves.add(Board.Action.HOLD);
+        }
+        if (right.getLastResult() == Board.Result.SUCCESS) {
+            options.add(right.testMove(Board.Action.DROP));
+            firstMoves.add(Board.Action.HOLD);
+        }
+
+        // CHECKING LEFT TRANSLATIONS
+
+        // go through left translations of the spawn state, only if the original rotation was successful
+        if (zero.getLastResult() == Board.Result.SUCCESS) {
+            Board left0 = zero.testMove(Board.Action.LEFT);
+            while (left0.getLastResult() == Board.Result.SUCCESS) {
+                options.add(left0.testMove(Board.Action.DROP));
+                firstMoves.add(Board.Action.HOLD);
+                left0.move(Board.Action.LEFT);
+            }
+        }
+
+        // go through left translations of the left state, only if the original rotation was successful
+        if (left.getLastResult() == Board.Result.SUCCESS) {
+            Board leftL = left.testMove(Board.Action.LEFT);
+            while (leftL.getLastResult() == Board.Result.SUCCESS) {
+                options.add(leftL.testMove(Board.Action.DROP));
+                firstMoves.add(Board.Action.HOLD);
+                leftL.move(Board.Action.LEFT);
+            }
+        }
+
+        // go through left translations of the 180 state, only if the original rotation was successful
+        if (two.getLastResult() == Board.Result.SUCCESS) {
+            Board left2 = two.testMove(Board.Action.LEFT);
+            while (left2.getLastResult() == Board.Result.SUCCESS) {
+                options.add(left2.testMove(Board.Action.DROP));
+                firstMoves.add(Board.Action.HOLD);
+                left2.move(Board.Action.LEFT);
+            }
+        }
+
+        // go through left translations of the right state, only if the original rotation was successful
+        if (right.getLastResult() == Board.Result.SUCCESS) {
+            Board leftR = right.testMove(Board.Action.LEFT);
+            while (leftR.getLastResult() == Board.Result.SUCCESS) {
+                options.add(leftR.testMove(Board.Action.DROP));
+                firstMoves.add(Board.Action.HOLD);
+                leftR.move(Board.Action.LEFT);
+            }
+        }
+
+        // CHECKING RIGHT TRANSLATIONS
+
+        // go through right translations of the spawn state, only if the original rotation was successful
+        if (zero.getLastResult() == Board.Result.SUCCESS) {
+            Board right0 = zero.testMove(Board.Action.RIGHT);
+            while (right0.getLastResult() == Board.Result.SUCCESS) {
+                options.add(right0.testMove(Board.Action.DROP));
+                firstMoves.add(Board.Action.HOLD);
+                right0.move(Board.Action.RIGHT);
+            }
+        }
+
+        // go through right translations of the left state, only if the original rotation was successful
+        if (left.getLastResult() == Board.Result.SUCCESS) {
+            Board rightL = left.testMove(Board.Action.RIGHT);
+            while (rightL.getLastResult() == Board.Result.SUCCESS) {
+                options.add(rightL.testMove(Board.Action.DROP));
+                firstMoves.add(Board.Action.HOLD);
+                rightL.move(Board.Action.RIGHT);
+            }
+        }
+
+        // go through right translations of the 180 state, only if the original rotation was successful
+        if (two.getLastResult() == Board.Result.SUCCESS) {
+            Board right2 = two.testMove(Board.Action.RIGHT);
+            while (right2.getLastResult() == Board.Result.SUCCESS) {
+                options.add(right2.testMove(Board.Action.DROP));
+                firstMoves.add(Board.Action.HOLD);
+                right2.move(Board.Action.RIGHT);
+            }
+        }
+
+        // go through right translations of the right state, only if the original rotation was successful
+        if (right.getLastResult() == Board.Result.SUCCESS) {
+            Board rightR = right.testMove(Board.Action.RIGHT);
+            while (rightR.getLastResult() == Board.Result.SUCCESS) {
+                options.add(rightR.testMove(Board.Action.DROP));
+                firstMoves.add(Board.Action.HOLD);
+                rightR.move(Board.Action.RIGHT);
+            }
+        }
+    }
+
+
 
     /**
      * Assigns a score for a Board state based on weighted parameters.
